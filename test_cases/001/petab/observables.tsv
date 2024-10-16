@@ -1,0 +1,3 @@
+observableId	observableName	observableFormula	noiseFormula	observableTransformation	noiseDistribution
+prey		prey	0.1	lin	normal
+predator		predator	0.1	lin	normal
