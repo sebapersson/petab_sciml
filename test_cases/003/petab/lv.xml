@@ -106,6 +106,7 @@
             <apply>
               <times/>
               <ci> gamma </ci>
+              <ci> predator </ci>
             </apply>
           </math>
         </kineticLaw>
