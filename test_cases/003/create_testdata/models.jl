@@ -29,5 +29,5 @@ end
 
 # ODEProblem for model
 u0 = [0.44249296, 4.6280594]
-p_mechanistic = (α = 1.3, δ = 1.8, β = 0.9, γ = 0.8)
+p_mechanistic = (α = 1.3, δ = 1.8, β = 0.9, γ = 0.8) |> ComponentArray
 oprob = ODEProblem(lv!, u0, (0.0, 10.0), p_mechanistic)

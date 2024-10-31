@@ -5,6 +5,7 @@
 
 using QuasiMonteCarlo, ForwardDiff, Optimization, OptimizationOptimisers
 include(joinpath(@__DIR__, "models.jl"))
+include(joinpath(@__DIR__, "..", "..", "helper.jl"))
 Random.seed!(123)
 
 # Stage 1: the neural network should learn prod(γ, x, y), where x and y are the inputs.
@@ -54,7 +55,5 @@ x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 4000)
 
 # Write neural-net parameters to file
-using CSV
-include(joinpath(@__DIR__, "..", "..", "helper.jl"))
 ps_df = nn_ps_to_tidy(nn_model, sol2.u, :net1)
 CSV.write(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), ps_df, delim = '\t')

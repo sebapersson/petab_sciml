@@ -49,7 +49,7 @@ oprob.p .= x[1:4]
 sol = solve(oprob, Vern9(), abstol = 1e-9, reltol = 1e-9,
             saveat = unique(measurements.time))
 prey_vals = [nn_model(sol[:, i], x.p_net1, st)[1][1] for i in eachindex(sol.t)]
-simulated_valus = vcat(prey_vals, sol[2, :])
+simulated_values = vcat(prey_vals, sol[2, :])
 
 ## Write values for saving to file
 # YAML problem file
@@ -65,7 +65,7 @@ YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Simulated values
 simulations_df = deepcopy(measurements)
 rename!(simulations_df, "measurement" => "simulation")
-simulations_df.simulation .= simulated_valus
+simulations_df.simulation .= simulated_values
 CSV.write(joinpath(@__DIR__, "..", "simulations.tsv"), simulations_df, delim = '\t')
 # Gradient values
 df_net = deepcopy(df_ps_nn)

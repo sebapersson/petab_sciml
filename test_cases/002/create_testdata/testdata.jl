@@ -44,7 +44,7 @@ llh_grad = FiniteDifferences.grad(central_fdm(5, 1), _f, x)[1] .* -1
 oprob_nn.p .= x
 sol = solve(oprob_nn, Vern9(), abstol = 1e-9, reltol = 1e-9,
             saveat = unique(measurements.time))
-simulated_valus = vcat(sol[1, :], sol[2, :])
+simulated_values = vcat(sol[1, :], sol[2, :])
 
 ## Write values for saving to file
 # YAML problem file
@@ -60,7 +60,7 @@ YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Simulated values
 simulations_df = deepcopy(measurements)
 rename!(simulations_df, "measurement" => "simulation")
-simulations_df.simulation .= simulated_valus
+simulations_df.simulation .= simulated_values
 CSV.write(joinpath(@__DIR__, "..", "simulations.tsv"), simulations_df, delim = '\t')
 # Gradient values
 df_net = deepcopy(df_ps_nn)

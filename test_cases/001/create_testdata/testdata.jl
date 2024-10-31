@@ -4,6 +4,7 @@
 
 using FiniteDifferences, YAML
 include(joinpath(@__DIR__, "models.jl"))
+include(joinpath(@__DIR__, "..", "..", "helper.jl"))
 Random.seed!(123)
 
 function compute_nllh(x, oprob::ODEProblem, solver, measurements::DataFrame; abstol = 1e-9,
@@ -31,7 +32,6 @@ measurements = CSV.read(joinpath(@__DIR__, "..", "petab", "measurements.tsv"), D
 # Objective function
 x = deepcopy(p_ode)
 # Read neural net parameters, and assign to x
-include(joinpath(@__DIR__, "..", "..", "helper.jl"))
 df_ps_nn = CSV.read(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), DataFrame)
 set_ps_net!(x.p_net1, df_ps_nn, :net1, nn_model)
 
@@ -44,7 +44,7 @@ llh_grad = FiniteDifferences.grad(central_fdm(5, 1), _f, x)[1] .* -1
 oprob_nn.p .= x
 sol = solve(oprob_nn, Vern9(), abstol = 1e-9, reltol = 1e-9,
             saveat = unique(measurements.time))
-simulated_valus = vcat(sol[1, :], sol[2, :])
+simulated_values = vcat(sol[1, :], sol[2, :])
 
 ## Write values for saving to file
 # YAML problem file
@@ -60,7 +60,7 @@ YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Simulated values
 simulations_df = deepcopy(measurements)
 rename!(simulations_df, "measurement" => "simulation")
-simulations_df.simulation .= simulated_valus
+simulations_df.simulation .= simulated_values
 CSV.write(joinpath(@__DIR__, "..", "simulations.tsv"), simulations_df, delim = '\t')
 # Gradient values
 df_net = deepcopy(df_ps_nn)
