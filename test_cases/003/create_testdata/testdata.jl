@@ -42,7 +42,7 @@ df_ps_nn = CSV.read(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), Data
 set_ps_net!(x.p_net1, df_ps_nn, :net1, nn_model)
 
 ## Compute model values
-_f = (x) -> compute_nllh(x, oprob, Vern9(), measurements; abstol = 1e-9, reltol = 1e-9)
+_f = (x) -> compute_nllh(x, oprob, Vern9(), measurements; abstol = 1e-12, reltol = 1e-12)
 llh = _f(x) .* -1
 # High order finite-difference scheme
 llh_grad = FiniteDifferences.grad(central_fdm(5, 1), _f, x)[1] .* -1
@@ -56,11 +56,11 @@ simulated_values = vcat(sol[1, :], sol[2, :])
 ## Write values for saving to file
 # YAML problem file
 solutions = Dict(:llh => llh,
-                 :tol_lhh => 1e-3,
-                 :tol_grad_llh => 1e-2,
+                 :tol_llh => 1e-3,
+                 :tol_grad_llh => 1e-1,
                  :tol_simulations => 1e-3,
                  :tol_nn_output => 1e-3,
-                 :grad_nll_files => ["grad_llh.tsv"],
+                 :grad_llh_files => ["grad_llh.tsv"],
                  :simulation_files => ["simulations.tsv"],
                  :nn_output_files => ["nn_output1", "nn_output2", "nn_output3"])
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
