@@ -4,21 +4,19 @@ include(joinpath(@__DIR__, "..", "..", "helper.jl"))
 
 # A Lux.jl Neural-Network model
 nn_model = @compact(
-    layer1 = ConvTranspose((5, 5, 5), 1 => 2; cross_correlation = true),
-    layer2 = ConvTranspose((5, 4, 3), 2 => 1; cross_correlation = true)
+    flatten1 = FlattenRowMajor(flatten_all = true),
 ) do x
-    embed = layer1(x)
-    out = layer2(embed)
+    out = flatten1(x)
     @return out
 end
 
 for i in 1:3
     rng = StableRNG(i)
     ps, st = Lux.setup(rng, nn_model)
-    input = rand(rng, 9, 8, 7, 1, 1)
+    input = rand(rng, 4, 3)
     output = nn_model(input, ps, st)[1]
-    df_input = _array_to_tidy(input[:, :, :, :, 1]; mapping = [1 => 4, 2 => 1, 3 => 2, 4 => 3])
-    df_output = _array_to_tidy(output[:, :, :, :, 1];  mapping = [1 => 4, 2 => 1, 3 => 2, 4 => 3])
+    df_input = _array_to_tidy(input)
+    df_output = _array_to_tidy(output)
     CSV.write(joinpath(@__DIR__, "..", "net_input_$i.tsv"), df_input, delim = '\t')
     CSV.write(joinpath(@__DIR__, "..", "net_output_$i.tsv"), df_output, delim = '\t')
 end

@@ -2,8 +2,45 @@
     Helper functions for writing neural-network parameters to file
 =#
 
-using Lux, ComponentArrays, DataFrames
+using Lux, ComponentArrays, DataFrames, Random
 using Catalyst: @unpack
+
+struct FlattenRowMajor <: LuxCore.AbstractLuxLayer
+    flatten_all::Bool
+end
+function FlattenRowMajor(;flatten_all::Bool=false)
+    return FlattenRowMajor(flatten_all)
+end
+
+LuxCore.initialparameters(::AbstractRNG, ::FlattenRowMajor) = NamedTuple()
+
+LuxCore.initialstates(::AbstractRNG, ::FlattenRowMajor) = NamedTuple()
+
+LuxCore.parameterlength(::FlattenRowMajor) = 0
+
+LuxCore.statelength(::FlattenRowMajor) = 0
+
+# TODO: Dispatch on Bool
+function (f::FlattenRowMajor)(x::AbstractArray{T, N}, _, st::NamedTuple) where {T, N}
+    if f.flatten_all == false
+        if length(size(x)) == 3
+            _x = permutedims(x, (2, 1, 3))
+        elseif f.flatten_all == false && length(size(x)) == 4
+            _x = permutedims(x, (2, 1, 3, 4))
+        else
+            throw(ArgumentError("x has dim we cannot handle"))
+        end
+        return reshape(_x, :, size(_x, N)), st
+    end
+    if length(size(x)) == 2
+        _x = permutedims(x, (2, 1))
+    elseif length(size(x)) == 3
+        _x = permutedims(x, (2, 1, 3))
+    else
+        throw(ArgumentError("x has dim we cannot handle"))
+    end
+    return vec(_x), st
+end
 
 function nn_ps_to_tidy(nn, ps::Union{ComponentArray, NamedTuple}, netname::Symbol)::DataFrame
     df_ps = DataFrame()
@@ -119,11 +156,11 @@ function layer_ps_to_tidy(layer::Lux.Bilinear, ps::Union{NamedTuple, ComponentAr
     return vcat(df_weight, df_bias)
 end
 """
-    layer_ps_to_tidy(layer::Union{Lux.MaxPool}, ...)::DataFrame
+    layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.FlattenLayer}, ...)::DataFrame
 
 Pooling layers do not have parameters.
 """
-function layer_ps_to_tidy(layer::Union{Lux.MaxPool},::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
+function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.FlattenLayer, FlattenRowMajor}, ::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
     return DataFrame()
 end
 
