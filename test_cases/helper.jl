@@ -58,15 +58,25 @@ end
     layer_ps_to_tidy(layer::Lux.ConvTranspose, ...)::DataFrame
 
 For `ConvTranspose` layer possible parameters that are saved to a DataFrame are:
-- `weight` of dimension `(kernel_size, in_channels, out_channels)`
+- `weight` of dimension `(in_channels, out_channels, kernel_size)`
 - `bias` of dimension `(out_channels)`
 
-Note that `kernel_size` for `ConvTranspose` and `Conv` layers can be a `Tuple`, for example
-for `Torch` `conv2d` it is a two-dimensional tuple.
+!!! note
+    Note, in Lux.jl `weight` has `(kernel_size, out_channels, in_channels)`. This is fixed
+    by the importer.
 """
 function layer_ps_to_tidy(layer::Lux.ConvTranspose, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
+    # torch.Size([2, 1, 5, 2])
     @unpack kernel_size, use_bias, in_chs, out_chs = layer
-    df_weight = _ps_weight_to_tidy(ps, (kernel_size..., out_chs, in_chs), netname, layername)
+    if length(kernel_size) == 1
+        _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
+    elseif length(kernel_size) == 2
+        _psweigth = _reshape_array(ps.weight, [1 => 4, 2 => 3, 3 => 1, 4 => 2])
+    elseif length(kernel_size) == 3
+        _psweigth = _reshape_array(ps.weight, [1 => 5, 2 => 4, 3 => 1, 4 => 2, 5 => 3])
+    end
+    _ps = ComponentArray(weight = _psweigth)
+    df_weight = _ps_weight_to_tidy(_ps, (in_chs, out_chs, kernel_size...), netname, layername)
     df_bias = _ps_bias_to_tidy(ps, (out_chs, ), netname, layername, use_bias)
     return vcat(df_weight, df_bias)
 end
@@ -74,12 +84,12 @@ end
     layer_ps_to_tidy(layer::Lux.ConvTranspose, ...)::DataFrame
 
 For `Conv` layer possible parameters that are saved to a DataFrame are:
-- `weight` of dimension `(out_channels, in_channels, kernel_size)`
+- `weight` of dimension `(in_channels, out_channels, kernel_size)`
 - `bias` of dimension `(out_channels)`
 
 !!! note
-    Note, in Lux.jl `weight` has `(kernel_size, in_channels, out_channels)`, which
-    is fixed internally during mapping
+    Note, in Lux.jl `weight` has `(kernel_size, in_channels, out_channels)`. This is fixed
+    by the importer.
 """
 function layer_ps_to_tidy(layer::Lux.Conv, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
     @unpack kernel_size, use_bias, in_chs, out_chs = layer
