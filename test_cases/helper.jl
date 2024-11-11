@@ -85,8 +85,12 @@ function layer_ps_to_tidy(layer::Lux.Conv, ps::Union{NamedTuple, ComponentArray}
     @unpack kernel_size, use_bias, in_chs, out_chs = layer
     if length(kernel_size) == 1
         _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
-        _ps = ComponentArray(weight = _psweigth)
+    elseif length(kernel_size) == 2
+        _psweigth = _reshape_array(ps.weight, [1 => 4, 2 => 3, 3 => 1, 4 => 2])
+    elseif length(kernel_size) == 3
+        _psweigth = _reshape_array(ps.weight, [1 => 5, 2 => 4, 3 => 1, 4 => 2, 5 => 3])
     end
+    _ps = ComponentArray(weight = _psweigth)
     df_weight = _ps_weight_to_tidy(_ps, (out_chs, in_chs, kernel_size...), netname, layername)
     df_bias = _ps_bias_to_tidy(ps, (out_chs, ), netname, layername, use_bias)
     return vcat(df_weight, df_bias)
