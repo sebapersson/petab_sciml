@@ -84,6 +84,19 @@ function layer_ps_to_tidy(layer::Lux.Conv, ps::Union{NamedTuple, ComponentArray}
     return vcat(df_weight, df_bias)
 end
 """
+    layer_ps_to_tidy(layer::Lux.Bilinear, ...)::DataFrame
+
+For `Bilinear` layer possible parameters that are saved to a DataFrame are:
+- `weight` of dimension `(out_features, in_features1, in_features2)`
+- `bias` of dimension `(out_features)`
+"""
+function layer_ps_to_tidy(layer::Lux.Bilinear, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
+    @unpack in1_dims, in2_dims, out_dims, use_bias = layer
+    df_weight = _ps_weight_to_tidy(ps, (out_dims, in1_dims, in2_dims), netname, layername)
+    df_bias = _ps_bias_to_tidy(ps, (out_dims, ), netname, layername, use_bias)
+    return vcat(df_weight, df_bias)
+end
+"""
     layer_ps_to_tidy(layer::Union{Lux.MaxPool}, ...)::DataFrame
 
 Pooling layers do not have parameters.
@@ -108,6 +121,12 @@ end
 function set_ps_layer!(ps::ComponentArray, layer::Lux.Dense, df_ps::DataFrame)::Nothing
     @unpack in_dims, out_dims, use_bias = layer
     _set_ps_weight!(ps, (out_dims, in_dims), df_ps)
+    _set_ps_bias!(ps, (out_dims, ), df_ps, use_bias)
+    return nothing
+end
+function set_ps_layer!(ps::ComponentArray, layer::Lux.Bilinear, df_ps::DataFrame)::Nothing
+    @unpack in1_dims, in2_dims, out_dims, use_bias = layer
+    _set_ps_weight!(ps, (out_dims, in1_dims, in2_dims), df_ps)
     _set_ps_bias!(ps, (out_dims, ), df_ps, use_bias)
     return nothing
 end
