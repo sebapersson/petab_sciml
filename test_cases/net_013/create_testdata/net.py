@@ -13,14 +13,14 @@ from helper import read_array, get_ps_layer
 class Net(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        self.flatten1 = nn.Flatten()
+        self.flatten1 = nn.Flatten(start_dim=0)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         x = self.flatten1(input)
         return x
 
 # Create a pytorch module, convert it to PEtab SciML, then save it to disk.
-dir_save = os.path.join(os.getcwd(), 'test_cases', "net_011")
+dir_save = os.path.join(os.getcwd(), 'test_cases', "net_013")
 net = Net()
 mlmodel = MLModel.from_pytorch_module(
     module=net, mlmodel_id="model1", inputs=[Input(input_id="input1")]
