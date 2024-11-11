@@ -5,7 +5,7 @@ def extract_numbers(series):
     return out
 
 def get_dim(ix):
-    max_values = [max(column) for column in zip(*ix)]
+    max_values = [max(column) + 1 for column in zip(*ix)]
     return max_values
 
 def get_ps_layer(df, layer_name, ps_name):
@@ -17,7 +17,7 @@ def get_ps_layer(df, layer_name, ps_name):
     dims = get_dim(ix)
     out = torch.ones(*dims)
     for i in range(df_layer.shape[0]):
-        _ix = [x - 1 for x in ix[i]]
+        _ix = ix[i]
         out[*_ix] = df_layer.loc[i, "value"]
 
     return out
@@ -28,6 +28,6 @@ def read_array(df):
     dims = get_dim(ix)
     out = torch.ones(*dims)
     for i in range(df.shape[0]):
-        _ix = [x - 1 for x in ix[i]]
+        _ix = ix[i]
         out[*_ix] = df.loc[i, "value"]
     return out

@@ -74,12 +74,20 @@ end
     layer_ps_to_tidy(layer::Lux.ConvTranspose, ...)::DataFrame
 
 For `Conv` layer possible parameters that are saved to a DataFrame are:
-- `weight` of dimension `(kernel_size, out_channels, in_channels)`
+- `weight` of dimension `(out_channels, in_channels, kernel_size)`
 - `bias` of dimension `(out_channels)`
+
+!!! note
+    Note, in Lux.jl `weight` has `(kernel_size, in_channels, out_channels)`, which
+    is fixed internally during mapping
 """
 function layer_ps_to_tidy(layer::Lux.Conv, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
     @unpack kernel_size, use_bias, in_chs, out_chs = layer
-    df_weight = _ps_weight_to_tidy(ps, (kernel_size..., in_chs, out_chs), netname, layername)
+    if length(kernel_size) == 1
+        _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
+        _ps = ComponentArray(weight = _psweigth)
+    end
+    df_weight = _ps_weight_to_tidy(_ps, (out_chs, in_chs, kernel_size...), netname, layername)
     df_bias = _ps_bias_to_tidy(ps, (out_chs, ), netname, layername, use_bias)
     return vcat(df_weight, df_bias)
 end
@@ -157,6 +165,7 @@ end
 
 function _ps_weight_to_tidy(ps, weight_dims, netname::Symbol, layername::Symbol)::DataFrame
     iweight = getfield.(findall(x -> true, ones(weight_dims)), :I)
+    iweight = [iw .- 1 for iw in iweight]
     weight_names =  ["weight" * prod("_" .* string.(ix)) for ix in iweight]
     df_weight = DataFrame(parameterId = "$(netname)_$(layername)_" .* weight_names,
                           value = vec(ps.weight))
@@ -168,7 +177,7 @@ function _ps_bias_to_tidy(ps, bias_dims, netname::Symbol, layername::Symbol, use
     if length(bias_dims) > 1
         ibias = getfield.(findall(x -> true, ones(bias_dims)), :I)
     else
-        ibias = 1:bias_dims[1]
+        ibias = (0:bias_dims[1]-1)
     end
     bias_names =  ["bias" * prod("_" .* string.(ix)) for ix in ibias]
     df_bias = DataFrame(parameterId = "$(netname)_$(layername)_" .* bias_names,
@@ -176,15 +185,33 @@ function _ps_bias_to_tidy(ps, bias_dims, netname::Symbol, layername::Symbol, use
     return df_bias
 end
 
-function _array_to_tidy(x::Array)::DataFrame
+function _array_to_tidy(xin::Array; mapping = nothing)::DataFrame
+    if isnothing(mapping)
+        x = xin
+    else
+        x = _reshape_array(xin, mapping)
+    end
     dims = size(x)
     if length(dims) == 1
         ix = 1:dims[1]
     else
         ix = getfield.(findall(y -> true, ones(dims)), :I)
     end
-    ix_names =  [prod(string.(i) .* ";")[1:end-1] for i in ix]
+    ix_names = [prod(string.(i .- 1) .* ";")[1:end-1] for i in ix]
     dfx = DataFrame(value = vec(x),
                     ix = ix_names)
     return dfx
+end
+
+function _reshape_array(x, mapping)
+    dims_out = size(x)[last.(mapping)]
+    xout = reshape(deepcopy(x), dims_out)
+    for i in eachindex(Base.CartesianIndices(x))
+        inew = zeros(Int64, length(i.I))
+        for j in eachindex(i.I)
+            inew[j] = i.I[mapping[j].second]
+        end
+        xout[inew...] = x[i]
+    end
+    return xout
 end
