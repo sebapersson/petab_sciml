@@ -6,7 +6,7 @@ net_ps:
   - "net_ps_1.tsv"
   - "net_ps_2.tsv"
   - "net_ps_3.tsv"
-dropout: 20000
+dropout: 40000
 net_file: "net.yaml"
 net_output:
   - "net_output_1.tsv"

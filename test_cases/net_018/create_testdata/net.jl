@@ -1,8 +1,4 @@
-using Lux, CSV, DataFrames, StableRNGs, YAML
 
-include(joinpath(@__DIR__, "..", "..", "helper.jl"))
-
-# A Lux.jl Neural-Network model
 nn_model = @compact(
     conv1 = Conv((5, 5), 1 => 6; cross_correlation = true),
     conv2 = Conv((5, 5), 6 => 16; cross_correlation = true),
@@ -12,7 +8,7 @@ nn_model = @compact(
     fc3 = Dense(84, 10),
     flatten1 = FlattenRowMajor()
 ) do x
-    c1 = conv1(input)
+    c1 = conv1(x)
     s2 = max_pool1(c1)
     c3 = conv2(s2)
     s4 = max_pool1(c3)
@@ -35,8 +31,4 @@ for i in 1:3
     CSV.write(joinpath(@__DIR__, "..", "net_input_$i.tsv"), df_input, delim = '\t')
     CSV.write(joinpath(@__DIR__, "..", "net_output_$i.tsv"), df_output, delim = '\t')
 end
-solutions = Dict(:net_file => "net.yaml",
-                 :net_ps => ["net_ps_1.tsv", "net_ps_2.tsv", "net_ps_3.tsv"],
-                 :net_input => ["net_input_1.tsv", "net_input_2.tsv", "net_input_3.tsv"],
-                 :net_output => ["net_output_1.tsv", "net_output_2.tsv", "net_output_3.tsv"])
-YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
+write_yaml(joinpath(@__DIR__, ".."))

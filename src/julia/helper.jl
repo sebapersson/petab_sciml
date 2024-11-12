@@ -5,41 +5,19 @@
 using Lux, ComponentArrays, DataFrames, Random
 using Catalyst: @unpack
 
-struct FlattenRowMajor <: LuxCore.AbstractLuxLayer
-    flatten_all::Bool
-end
-function FlattenRowMajor(;flatten_all::Bool=false)
-    return FlattenRowMajor(flatten_all)
-end
-
-LuxCore.initialparameters(::AbstractRNG, ::FlattenRowMajor) = NamedTuple()
-
-LuxCore.initialstates(::AbstractRNG, ::FlattenRowMajor) = NamedTuple()
-
-LuxCore.parameterlength(::FlattenRowMajor) = 0
-
-LuxCore.statelength(::FlattenRowMajor) = 0
-
-# TODO: Dispatch on Bool
-function (f::FlattenRowMajor)(x::AbstractArray{T, N}, _, st::NamedTuple) where {T, N}
-    if f.flatten_all == false
-        if length(size(x)) == 3
-            _x = permutedims(x, (2, 1, 3))
-        elseif f.flatten_all == false && length(size(x)) == 4
-            _x = permutedims(x, (2, 1, 3, 4))
-        else
-            throw(ArgumentError("x has dim we cannot handle"))
-        end
-        return reshape(_x, :, size(_x, N)), st
+function write_yaml(dirsave; ps::Bool=true, dropout::Bool=false)::Nothing
+    solutions = Dict(
+        :net_file => "net.yaml",
+        :net_input => ["net_input_1.tsv", "net_input_2.tsv", "net_input_3.tsv"],
+        :net_output => ["net_output_1.tsv", "net_output_2.tsv", "net_output_3.tsv"])
+    if ps
+        solutions[:net_ps] = ["net_ps_1.tsv", "net_ps_2.tsv", "net_ps_3.tsv"]
     end
-    if length(size(x)) == 2
-        _x = permutedims(x, (2, 1))
-    elseif length(size(x)) == 3
-        _x = permutedims(x, (2, 1, 3))
-    else
-        throw(ArgumentError("x has dim we cannot handle"))
+    if dropout
+        solutions[:dropout] = 40000
     end
-    return vec(_x), st
+    YAML.write_file(joinpath(dirsave, "solutions.yaml"), solutions)
+    return nothing
 end
 
 function nn_ps_to_tidy(nn, ps::Union{ComponentArray, NamedTuple}, netname::Symbol)::DataFrame
@@ -103,7 +81,6 @@ For `ConvTranspose` layer possible parameters that are saved to a DataFrame are:
     by the importer.
 """
 function layer_ps_to_tidy(layer::Lux.ConvTranspose, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
-    # torch.Size([2, 1, 5, 2])
     @unpack kernel_size, use_bias, in_chs, out_chs = layer
     if length(kernel_size) == 1
         _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
