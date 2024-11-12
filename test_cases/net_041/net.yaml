@@ -16,9 +16,9 @@ models:
         target: input
         args: []
         kwargs: {}
-    -   name: softmax
+    -   name: log_softmax
         op: call_function
-        target: softmax
+        target: log_softmax
         args:
         - input_1
         kwargs:
@@ -29,5 +29,5 @@ models:
         op: output
         target: output
         args:
-        - softmax
+        - log_softmax
         kwargs: {}

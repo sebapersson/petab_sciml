@@ -11,7 +11,7 @@ class Net(nn.Module):
         self.layer1 = nn.Linear(2, 5)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
-        out = F.softmax(input, dim=1)
+        out = F.log_softmax(input, dim=1)
         return out
 
 # Create a pytorch module, convert it to PEtab SciML, then save it to disk.

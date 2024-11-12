@@ -5,11 +5,13 @@
 using Lux, ComponentArrays, DataFrames, Random
 using Catalyst: @unpack
 
-function write_yaml(dirsave; ps::Bool=true, dropout::Bool=false)::Nothing
+function write_yaml(dirsave, input_order_jl, input_order_py; ps::Bool=true, dropout::Bool=false)::Nothing
     solutions = Dict(
         :net_file => "net.yaml",
         :net_input => ["net_input_1.tsv", "net_input_2.tsv", "net_input_3.tsv"],
-        :net_output => ["net_output_1.tsv", "net_output_2.tsv", "net_output_3.tsv"])
+        :net_output => ["net_output_1.tsv", "net_output_2.tsv", "net_output_3.tsv"],
+        :input_order_jl => input_order_jl,
+        :input_order_py => input_order_py)
     if ps
         solutions[:net_ps] = ["net_ps_1.tsv", "net_ps_2.tsv", "net_ps_3.tsv"]
     end
@@ -17,6 +19,28 @@ function write_yaml(dirsave; ps::Bool=true, dropout::Bool=false)::Nothing
         solutions[:dropout] = 40000
     end
     YAML.write_file(joinpath(dirsave, "solutions.yaml"), solutions)
+    return nothing
+end
+
+function save_input(dirsave, i::Integer, input, input_order_jl, input_order_py)::Nothing
+    @assert length(input_order_jl) == length(input_order_py) "Length of input format vectors do not match"
+    if input_order_jl == input_order_py
+        df_input = _array_to_tidy(input)
+    else
+        imap = zeros(Int64, length(input_order_jl))
+        for i in eachindex(input_order_py)
+            imap[i] = findfirst(x -> x == input_order_py[i], input_order_jl)
+        end
+        map = collect(1:length(input_order_py)) .=> imap
+        df_input = _array_to_tidy(input; mapping = map)
+    end
+    CSV.write(joinpath(dirsave, "net_input_$i.tsv"), df_input, delim = "\t")
+    return nothing
+end
+
+function save_ps(dirsave, i::Integer, nn_model, ps)::Nothing
+    df_ps = nn_ps_to_tidy(nn_model, ps, :net)
+    CSV.write(joinpath(dirsave, "net_ps_$i.tsv"), df_ps, delim = '\t')
     return nothing
 end
 

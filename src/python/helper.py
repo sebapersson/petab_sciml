@@ -34,9 +34,9 @@ def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):
             output = net.forward(input)
         else:
             output = torch.zeros_like(output_ref)
-            for i in range(40000):
+            for i in range(50000):
                 output += net.forward(input)
-            output /= 40000
+            output /= 50000
         torch.testing.assert_close(output_ref, output, atol=atol, rtol=0.0)
 
 
