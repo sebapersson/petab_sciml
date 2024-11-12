@@ -28,9 +28,9 @@ models:
         args:
         - input_1
         kwargs: {}
-    -   name: celu
+    -   name: elu
         op: call_function
-        target: celu
+        target: elu
         args:
         - layer1
         kwargs:
@@ -40,11 +40,11 @@ models:
         op: call_module
         target: layer2
         args:
-        - celu
+        - elu
         kwargs: {}
-    -   name: celu_1
+    -   name: elu_1
         op: call_function
-        target: celu
+        target: elu
         args:
         - layer2
         kwargs:
@@ -54,5 +54,5 @@ models:
         op: output
         target: output
         args:
-        - celu_1
+        - elu_1
         kwargs: {}

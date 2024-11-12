@@ -28,9 +28,9 @@ models:
         args:
         - input_1
         kwargs: {}
-    -   name: relu6
+    -   name: relu
         op: call_function
-        target: relu6
+        target: relu
         args:
         - layer1
         kwargs:
@@ -39,7 +39,7 @@ models:
         op: call_module
         target: layer2
         args:
-        - relu6
+        - relu
         kwargs: {}
     -   name: output
         op: output
