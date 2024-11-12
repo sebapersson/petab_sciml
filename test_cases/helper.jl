@@ -160,10 +160,9 @@ end
 
 Pooling layers do not have parameters.
 """
-function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.FlattenLayer, FlattenRowMajor}, ::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
+function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.AdaptiveMeanPool, Lux.FlattenLayer, Lux.Dropout, Lux.AlphaDropout, FlattenRowMajor}, ::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
     return DataFrame()
 end
-
 
 function set_ps_layer!(ps::ComponentArray, layer::Lux.ConvTranspose, df_ps::DataFrame)::Nothing
     @unpack kernel_size, use_bias, in_chs, out_chs = layer
