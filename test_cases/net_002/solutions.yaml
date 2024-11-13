@@ -6,11 +6,15 @@ input_order_py:
   - "W"
 input_order_jl:
   - "W"
+output_order_jl:
+  - "W"
 net_ps:
   - "net_ps_1.tsv"
   - "net_ps_2.tsv"
   - "net_ps_3.tsv"
 net_file: "net.yaml"
+output_order_py:
+  - "W"
 net_output:
   - "net_output_1.tsv"
   - "net_output_2.tsv"

@@ -8,7 +8,13 @@ input_order_py:
 input_order_jl:
   - "W"
   - "H"
+output_order_jl:
+  - "W"
+  - "H"
 net_file: "net.yaml"
+output_order_py:
+  - "H"
+  - "W"
 net_output:
   - "net_output_1.tsv"
   - "net_output_2.tsv"

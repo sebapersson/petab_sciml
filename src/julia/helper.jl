@@ -5,13 +5,15 @@
 using Lux, ComponentArrays, DataFrames, Random
 using Catalyst: @unpack
 
-function write_yaml(dirsave, input_order_jl, input_order_py; ps::Bool=true, dropout::Bool=false)::Nothing
+function write_yaml(dirsave, input_order_jl, input_order_py, output_order_jl, output_order_py; ps::Bool=true, dropout::Bool=false)::Nothing
     solutions = Dict(
         :net_file => "net.yaml",
         :net_input => ["net_input_1.tsv", "net_input_2.tsv", "net_input_3.tsv"],
         :net_output => ["net_output_1.tsv", "net_output_2.tsv", "net_output_3.tsv"],
         :input_order_jl => input_order_jl,
-        :input_order_py => input_order_py)
+        :input_order_py => input_order_py,
+        :output_order_jl => output_order_jl,
+        :output_order_py => output_order_py)
     if ps
         solutions[:net_ps] = ["net_ps_1.tsv", "net_ps_2.tsv", "net_ps_3.tsv"]
     end
@@ -22,19 +24,23 @@ function write_yaml(dirsave, input_order_jl, input_order_py; ps::Bool=true, drop
     return nothing
 end
 
-function save_input(dirsave, i::Integer, input, input_order_jl, input_order_py)::Nothing
-    @assert length(input_order_jl) == length(input_order_py) "Length of input format vectors do not match"
-    if input_order_jl == input_order_py
+function save_io(dirsave, i::Integer, input, order_jl, order_py, iotype::Symbol)::Nothing
+    @assert length(order_jl) == length(order_py) "Length of input format vectors do not match"
+    if order_jl == order_py
         df_input = _array_to_tidy(input)
     else
-        imap = zeros(Int64, length(input_order_jl))
-        for i in eachindex(input_order_py)
-            imap[i] = findfirst(x -> x == input_order_py[i], input_order_jl)
+        imap = zeros(Int64, length(order_jl))
+        for i in eachindex(order_py)
+            imap[i] = findfirst(x -> x == order_py[i], order_jl)
         end
-        map = collect(1:length(input_order_py)) .=> imap
+        map = collect(1:length(order_py)) .=> imap
         df_input = _array_to_tidy(input; mapping = map)
     end
-    CSV.write(joinpath(dirsave, "net_input_$i.tsv"), df_input, delim = "\t")
+    if iotype == :input
+        CSV.write(joinpath(dirsave, "net_input_$i.tsv"), df_input, delim = "\t")
+    elseif iotype == :output
+        CSV.write(joinpath(dirsave, "net_output_$i.tsv"), df_input, delim = "\t")
+    end
     return nothing
 end
 

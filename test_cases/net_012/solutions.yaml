@@ -14,7 +14,13 @@ input_order_jl:
   - "D"
   - "C"
   - "N"
+output_order_jl:
+  - "W"
+  - "N"
 net_file: "net.yaml"
+output_order_py:
+  - "N"
+  - "W"
 net_output:
   - "net_output_1.tsv"
   - "net_output_2.tsv"

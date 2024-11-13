@@ -7,16 +7,16 @@ nn_model = @compact(
     @return out
 end
 
-input_order_jl = ["W", "C"]
-input_order_py = ["C", "W"]
+input_order_jl, input_order_py = ["W", "C"], ["C", "W"]
+output_order_jl, output_order_py = ["W", "C"], ["C", "W"]
+dirsave = joinpath(@__DIR__, "..")
 for i in 1:3
     rng = StableRNG(i)
     ps, st = Lux.setup(rng, nn_model)
     input = rand(rng, 10, 1, 1)
     output = nn_model(input, ps, st)[1]
-    save_ps(joinpath(@__DIR__, ".."), i, nn_model, ps)
-    save_input(joinpath(@__DIR__, ".."), i, input[:, :, 1], input_order_jl, input_order_py)
-    df_output = _array_to_tidy(output[:, :, 1];  mapping = [1 => 2, 2 => 1])
-    CSV.write(joinpath(@__DIR__, "..", "net_output_$i.tsv"), df_output, delim = '\t')
+    save_ps(dirsave, i, nn_model, ps)
+    save_io(dirsave, i, input[:, :, 1], input_order_jl, input_order_py, :input)
+    save_io(dirsave, i, output[:, :, 1], output_order_jl, output_order_py, :output)
 end
-write_yaml(joinpath(@__DIR__, ".."), input_order_jl, input_order_py)
+write_yaml(dirsave, input_order_jl, input_order_py, output_order_jl, output_order_py)

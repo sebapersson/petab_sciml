@@ -12,11 +12,17 @@ input_order_jl:
   - "H"
   - "C"
   - "N"
+output_order_jl:
+  - "W"
+  - "N"
 net_ps:
   - "net_ps_1.tsv"
   - "net_ps_2.tsv"
   - "net_ps_3.tsv"
 net_file: "net.yaml"
+output_order_py:
+  - "N"
+  - "W"
 net_output:
   - "net_output_1.tsv"
   - "net_output_2.tsv"
