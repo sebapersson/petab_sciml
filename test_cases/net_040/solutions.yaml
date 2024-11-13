@@ -3,11 +3,9 @@ net_input:
   - "net_input_2.tsv"
   - "net_input_3.tsv"
 input_order_py:
-  - "H"
   - "W"
 input_order_jl:
   - "W"
-  - "H"
 net_file: "net.yaml"
 net_output:
   - "net_output_1.tsv"
