@@ -8,8 +8,8 @@ input_order_py:
   - "H"
   - "W"
 input_order_jl:
-  - "H"
   - "W"
+  - "H"
   - "C"
   - "N"
 net_ps:

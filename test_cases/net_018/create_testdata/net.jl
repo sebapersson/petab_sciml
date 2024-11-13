@@ -6,7 +6,7 @@ nn_model = @compact(
     fc1 = Dense(64, 120),
     fc2 = Dense(120, 84),
     fc3 = Dense(84, 10),
-    flatten1 = FlattenRowMajor()
+    flatten1 = FlattenLayer()
 ) do x
     c1 = conv1(x)
     s2 = max_pool1(c1)
@@ -19,7 +19,7 @@ nn_model = @compact(
     @return output
 end
 
-input_order_jl = ["H", "W", "C", "N"]
+input_order_jl = ["W", "H", "C", "N"]
 input_order_py = ["N", "C", "H", "W"]
 for i in 1:3
     rng = StableRNG(i)

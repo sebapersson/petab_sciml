@@ -8,9 +8,9 @@ input_order_py:
   - "H"
   - "W"
 input_order_jl:
-  - "D"
-  - "H"
   - "W"
+  - "H"
+  - "D"
   - "C"
 net_file: "net.yaml"
 net_output:

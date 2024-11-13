@@ -1,16 +1,16 @@
 nn_model = @compact(
-    flatten1 = FlattenRowMajor(),
+    flatten1 = FlattenLayer(),
 ) do x
     out = flatten1(x)
     @return out
 end
 
-input_order_jl = ["H", "W", "N"]
+input_order_jl = ["W", "H", "N"]
 input_order_py = ["N", "H", "W"]
 for i in 1:3
     rng = StableRNG(i)
     ps, st = Lux.setup(rng, nn_model)
-    input = rand(rng, 4, 3, 1)
+    input = rand(rng, 3, 4, 1)
     output = nn_model(input, ps, st)[1]
     save_input(joinpath(@__DIR__, ".."), i, input, input_order_jl, input_order_py)
     df_output = _array_to_tidy(output; mapping = [1 => 2, 2 => 1])

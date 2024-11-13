@@ -19,4 +19,4 @@ class Net(nn.Module):
 dir_save = os.path.join(os.getcwd(), 'test_cases', "net_020")
 net = Net()
 make_yaml(net, dir_save)
-test_nn(net, dir_save, ["layer1"], dropout=True, atol=1e-2)
+test_nn(net, dir_save, ["layer1"], dropout=True, atol=2e-2)

@@ -7,7 +7,7 @@ models:
     -   layer_id: flatten1
         layer_type: Flatten
         args:
-            start_dim: 0
+            start_dim: 1
             end_dim: -1
     forward:
     -   name: input_1

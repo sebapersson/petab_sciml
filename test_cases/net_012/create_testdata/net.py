@@ -7,7 +7,7 @@ from src.python.helper import make_yaml, test_nn
 class Net(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        self.flatten1 = nn.Flatten(start_dim=0)
+        self.flatten1 = nn.Flatten()
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         x = self.flatten1(input)

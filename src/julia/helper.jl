@@ -89,33 +89,8 @@ For `Dense` layer possible parameters that are saved to a DataFrame are:
 """
 function layer_ps_to_tidy(layer::Lux.Dense, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
     @unpack in_dims, out_dims, use_bias = layer
-    df_weight = _ps_weight_to_tidy(ps, (out_dims, in_dims), netname, layername)
+    df_weight = _ps_weight_to_tidy(ps, netname, layername)
     df_bias = _ps_bias_to_tidy(ps, (out_dims, ), netname, layername, use_bias)
-    return vcat(df_weight, df_bias)
-end
-"""
-    layer_ps_to_tidy(layer::Lux.ConvTranspose, ...)::DataFrame
-
-For `ConvTranspose` layer possible parameters that are saved to a DataFrame are:
-- `weight` of dimension `(in_channels, out_channels, kernel_size)`
-- `bias` of dimension `(out_channels)`
-
-!!! note
-    Note, in Lux.jl `weight` has `(kernel_size, out_channels, in_channels)`. This is fixed
-    by the importer.
-"""
-function layer_ps_to_tidy(layer::Lux.ConvTranspose, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
-    @unpack kernel_size, use_bias, in_chs, out_chs = layer
-    if length(kernel_size) == 1
-        _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
-    elseif length(kernel_size) == 2
-        _psweigth = _reshape_array(ps.weight, [1 => 4, 2 => 3, 3 => 1, 4 => 2])
-    elseif length(kernel_size) == 3
-        _psweigth = _reshape_array(ps.weight, [1 => 5, 2 => 4, 3 => 1, 4 => 2, 5 => 3])
-    end
-    _ps = ComponentArray(weight = _psweigth)
-    df_weight = _ps_weight_to_tidy(_ps, (in_chs, out_chs, kernel_size...), netname, layername)
-    df_bias = _ps_bias_to_tidy(ps, (out_chs, ), netname, layername, use_bias)
     return vcat(df_weight, df_bias)
 end
 """
@@ -134,12 +109,51 @@ function layer_ps_to_tidy(layer::Lux.Conv, ps::Union{NamedTuple, ComponentArray}
     if length(kernel_size) == 1
         _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
     elseif length(kernel_size) == 2
-        _psweigth = _reshape_array(ps.weight, [1 => 4, 2 => 3, 3 => 1, 4 => 2])
+        #=
+            Julia (Lux.jl) and PyTorch encode images differently, and thus the W-matrix:
+            In PyTorch: (in_chs, out_chs, H, W)
+            In Julia  : (W, H, in_chs, out_chs)
+            Thus, except acounting for tensor encoding, kernel dimension is flipped
+        =#
+        _psweigth = _reshape_array(ps.weight, [1 => 4, 2 => 3, 3 => 2, 4 => 1])
     elseif length(kernel_size) == 3
-        _psweigth = _reshape_array(ps.weight, [1 => 5, 2 => 4, 3 => 1, 4 => 2, 5 => 3])
+        #=
+            Julia (Lux.jl) and PyTorch encode 3d-images differently, and thus the W-matrix:
+            In PyTorch: (in_chs, out_chs, D, H, W)
+            In Julia  : (W, H, D, in_chs, out_chs)
+            Thus, except acounting for tensor encoding, kernel dimension is flipped
+        =#
+        _psweigth = _reshape_array(ps.weight, [1 => 5, 2 => 4, 3 => 3, 4 => 2, 5 => 1])
     end
     _ps = ComponentArray(weight = _psweigth)
-    df_weight = _ps_weight_to_tidy(_ps, (out_chs, in_chs, kernel_size...), netname, layername)
+    df_weight = _ps_weight_to_tidy(_ps, netname, layername)
+    df_bias = _ps_bias_to_tidy(ps, (out_chs, ), netname, layername, use_bias)
+    return vcat(df_weight, df_bias)
+end
+"""
+    layer_ps_to_tidy(layer::Lux.ConvTranspose, ...)::DataFrame
+
+For `ConvTranspose` layer possible parameters that are saved to a DataFrame are:
+- `weight` of dimension `(in_channels, out_channels, kernel_size)`
+- `bias` of dimension `(out_channels)`
+
+!!! note
+    Note, in Lux.jl `weight` has `(kernel_size, out_channels, in_channels)`. This is fixed
+    by the importer.
+"""
+function layer_ps_to_tidy(layer::Lux.ConvTranspose, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
+    @unpack kernel_size, use_bias, in_chs, out_chs = layer
+    if length(kernel_size) == 1
+        _psweigth = _reshape_array(ps.weight, [1 => 3, 2 => 2, 3 => 1])
+    elseif length(kernel_size) == 2
+        # For the mapping, see comment above on image format in Lux.Conv
+        _psweigth = _reshape_array(ps.weight, [1 => 4, 2 => 3, 3 => 2, 4 => 1])
+    elseif length(kernel_size) == 3
+        # See comment on Lux.Conv
+        _psweigth = _reshape_array(ps.weight, [1 => 5, 2 => 4, 3 => 3, 4 => 2, 5 => 1])
+    end
+    _ps = ComponentArray(weight = _psweigth)
+    df_weight = _ps_weight_to_tidy(_ps, netname, layername)
     df_bias = _ps_bias_to_tidy(ps, (out_chs, ), netname, layername, use_bias)
     return vcat(df_weight, df_bias)
 end
@@ -152,7 +166,7 @@ For `Bilinear` layer possible parameters that are saved to a DataFrame are:
 """
 function layer_ps_to_tidy(layer::Lux.Bilinear, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
     @unpack in1_dims, in2_dims, out_dims, use_bias = layer
-    df_weight = _ps_weight_to_tidy(ps, (out_dims, in1_dims, in2_dims), netname, layername)
+    df_weight = _ps_weight_to_tidy(ps, netname, layername)
     df_bias = _ps_bias_to_tidy(ps, (out_dims, ), netname, layername, use_bias)
     return vcat(df_weight, df_bias)
 end
@@ -214,8 +228,8 @@ function _set_ps_bias!(ps::ComponentArray, bias_dims, df_ps::DataFrame, use_bias
     return nothing
 end
 
-function _ps_weight_to_tidy(ps, weight_dims, netname::Symbol, layername::Symbol)::DataFrame
-    iweight = getfield.(findall(x -> true, ones(weight_dims)), :I)
+function _ps_weight_to_tidy(ps, netname::Symbol, layername::Symbol)::DataFrame
+    iweight = getfield.(findall(x -> true, ones(size(ps.weight))), :I)
     iweight = [iw .- 1 for iw in iweight]
     weight_names =  ["weight" * prod("_" .* string.(ix)) for ix in iweight]
     df_weight = DataFrame(parameterId = "$(netname)_$(layername)_" .* weight_names,

@@ -1,11 +1,11 @@
 nn_model = @compact(
-    flatten1 = FlattenRowMajor(),
+    flatten1 = FlattenLayer(),
 ) do x
     out = flatten1(x)
     @return out
 end
 
-input_order_jl = ["H", "W", "C", "N"]
+input_order_jl = ["W", "H", "C", "N"]
 input_order_py = ["N", "C", "H", "W"]
 for i in 1:3
     rng = StableRNG(i)
