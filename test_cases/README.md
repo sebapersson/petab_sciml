@@ -13,23 +13,23 @@ For each case, the following things are tested:
 
 Below is a very brief summary of each case; more details can be found in the corresponding directory.
 
-## Case 001
+### Case 001
 
 A feed-forward neural network is a part of the ODE model.
 
-## Case 002
+### Case 002
 
 A feed-forward neural network sets one of the derivatives of the ODE model.
 
-## Case 003
+### Case 003
 
 A feed-forward neural network sets the values for a subset of ODE model kinetic parameters. As the neural network is not part of the ODE right-hand side, it only needs to be evaluated once per likelihood computation.
 
-## Case 004
+### Case 004
 
 A feed-forward neural network sets the values for a subset of ODE model kinetic parameters, where the input to the neural network depends on the simulation condition.
 
-## Case 005
+### Case 005
 
 A feed-forward neural network appears only in one of the observable formulas.
 
@@ -37,11 +37,13 @@ A feed-forward neural network appears only in one of the observable formulas.
 
 The neural networks test different layers and activation functions. Neural network parameters (e.g., weights) are stored in tidy format, where the indexing corresponds to PyTorch. For example, `netId_layerId_weight_0_1_1` is the weight for `layerId` at index `(0, 1, 1)`, which, given how Python denotes tensors, would correspond to `(2, 2, 1)` in Julia. Similarly, for input, PyTorch conventions are respected. This means that for channel input (e.g., for an image), the channel is the first dimension (unless there is a batch dimension then it is first).
 
-Important to consider for implementations is the `flatten` operation. By default, PyTorch flattens following a column-major ordering. For languages storing in row-major order, this should be respected. Otherwise, results are non-reproducible across flattening calls.
+Important to consider for implementations is the `flatten` operation. By default, PyTorch flattens following a column-major ordering. For languages storing in row-major order, this should be respected to avoid non-reproducible results across flattening calls. This raises the question of the best way to handle this. The simplest and likely the most efficient approach, as it respects how arrays are stored in memory, is to transform the input data. For example, in PyTorch, image dimensions should be provided in the form `(C, W, H)`, while in Julia, it should be stored as `(H, W, C)`. If, during neural net import into Julia, the input data and the convolutional kernels (and similar layers) are transformed to respect the Julia format, the resulting output will be consistent following flattening. See, for example, test case `net_018`.
+
+### What is tested
 
 For each case, it is tested that the neural network computes the correct output given an input and a specified parameter weight table, for three different random input combinations. When building the tests, consistency is tested between Lux.jl and PyTorch. Basically, by testing that two frameworks can compute the same values, we verify whether it is possible to build a consistent importer.
 
 The following layers and activation functions are currently supported in the standard:
 
-* **Layers**: `Conv1-3d`, `ConvTranspose1-3d`, `AvgPool1-3d`, `MaxPool1-3d`, `LPPool1-3d`, `AdaptiveMaxPool1-3d`, `AdaptiveMeanPool1-3d`, `Dropout1-3d`, `Dropout`, `AlphaDropout`, `Linear`, `Bilinear` and `Flatten`.
+* **Layers**: `Conv1-3d`, `ConvTranspose1-3d`, `AvgPool1-3d`, `MaxPool1-3d`, `LPPool1-3d`, `AdaptiveMaxPool1-3d`, `AdaptiveMeanPool1-3d`, `BatchNorm1-3d`, `InstanceNorm1-3d`, `LayerNorm`, `Dropout1-3d`, `Dropout`, `AlphaDropout`, `Linear`, `Bilinear` and `Flatten`.
 * **Activation**: `relu`, `relu6`, `hardtanh`, `hardswish`, `selu`, `leaky_relu`, `gelu`, `logsigmoid`, `tanhshrink`, `softsign`, `softplus`, `tanh`, `sigmoid`, `hardsigmoid`, `mish`, `elu`, `celu`, `softmax` and `log_softmax`.
