@@ -181,7 +181,7 @@ end
 
 Pooling layers do not have parameters.
 """
-function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.AdaptiveMeanPool, Lux.FlattenLayer, Lux.Dropout, Lux.AlphaDropout, FlattenRowMajor}, ::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
+function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.AdaptiveMeanPool, Lux.FlattenLayer, Lux.Dropout, Lux.AlphaDropout}, ::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
     return DataFrame()
 end
 

@@ -22,7 +22,7 @@ models:
         args:
         - input_1
         kwargs:
-            dim: 1
+            dim: 0
             _stacklevel: 3
             dtype: null
     -   name: output
