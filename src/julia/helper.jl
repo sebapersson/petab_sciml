@@ -194,6 +194,40 @@ function layer_ps_to_tidy(layer::Union{Lux.BatchNorm, Lux.InstanceNorm}, ps::Uni
     return vcat(df_weight, df_bias)
 end
 """
+    layer_ps_to_tidy(layer::Lux.LayerNorm, ...)::DataFrame
+
+For `LayerNorm` layer possible parameters that are saved to a DataFrame are:
+- `scale/weight` of `size(input)` dimension
+- `bias` of `size(input)` dimension
+!!! note
+    Input order differs between Lux.jl and PyTorch. Order `["C", "D", "H", "W"]` in
+    PyTorch corresponds to `["W", "H", "D", "C"]` in Lux.jl. Basically, regardless of input
+    dimension the Lux.jl dimension is the PyTorch dimension reversed.
+!!! note
+    In Lux.jl the input dimension in `size(input, 1)`.
+"""
+function layer_ps_to_tidy(layer::LayerNorm, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
+    @unpack shape, affine = layer
+    affine == false && return DataFrame()
+    if length(shape) == 4
+        _psweigth = _reshape_array(ps.scale[:, :, :, :, 1], [1 => 4, 2 => 3, 3 => 2, 4 => 1])
+        _psbias = _reshape_array(ps.bias[:, :, :, :, 1], [1 => 4, 2 => 3, 3 => 2, 4 => 1])
+    elseif length(shape) == 3
+        _psweigth = _reshape_array(ps.scale[:, :, :, 1], [1 => 3, 2 => 2, 3 => 1])
+        _psbias = _reshape_array(ps.bias[:, :, :, 1], [1 => 3, 2 => 2, 3 => 1])
+    elseif length(shape) == 2
+        _psweigth = _reshape_array(ps.scale[:, :, 1], [1 => 2, 2 => 1])
+        _psbias = _reshape_array(ps.bias[:, :, 1], [1 => 2, 2 => 1])
+    elseif length(shape) == 1
+        _psweigth = ps.scale[:, 1]
+        _psbias = ps.bias[:, 1]
+    end
+    _ps = ComponentArray(weight = _psweigth, bias = _psbias)
+    df_weight = _ps_weight_to_tidy(_ps, netname, layername)
+    df_bias = _ps_bias_to_tidy(_ps, size(_ps.bias), netname, layername, true)
+    return vcat(df_weight, df_bias)
+end
+"""
     layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.FlattenLayer}, ...)::DataFrame
 
 Pooling layers do not have parameters.
@@ -275,8 +309,9 @@ function _ps_bias_to_tidy(ps, bias_dims, netname::Symbol, layername::Symbol, use
     if length(bias_dims) > 1
         ibias = getfield.(findall(x -> true, ones(bias_dims)), :I)
     else
-        ibias = (0:bias_dims[1]-1)
+        ibias = 1:bias_dims[1]
     end
+    ibias = [ib .- 1 for ib in ibias]
     bias_names =  ["bias" * prod("_" .* string.(ix)) for ix in ibias]
     df_bias = DataFrame(parameterId = "$(netname)_$(layername)_" .* bias_names,
                         value = vec(ps.bias))

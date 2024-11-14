@@ -18,13 +18,15 @@ def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):
     for i in range(1, 4):
         if not layer_names is None:
             for layer_name in layer_names:
+                layer = getattr(net, layer_name)
                 df = pd.read_csv(os.path.join(dir_save, "net_ps_" + str(i) + ".tsv"), delimiter='\t')
                 ps_weight = get_ps_layer(df, layer_name, "weight")
-                ps_bias = get_ps_layer(df, layer_name, "bias")
                 with torch.no_grad():
-                    layer = getattr(net, layer_name)
                     layer.weight[:] = ps_weight
-                    layer.bias[:] = ps_bias
+                if hasattr(layer, "bias") and (not layer.bias is None):
+                    ps_bias = get_ps_layer(df, layer_name, "bias")
+                    with torch.no_grad():
+                        layer.bias[:] = ps_bias
 
         df_input = pd.read_csv(os.path.join(dir_save, "net_input_" + str(i) + ".tsv"), delimiter='\t')
         df_output = pd.read_csv(os.path.join(dir_save, "net_output_" + str(i) + ".tsv"), delimiter='\t')
