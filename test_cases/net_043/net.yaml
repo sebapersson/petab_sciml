@@ -1,0 +1,56 @@
+models:
+- mlmodel_id: model1
+  inputs:
+  - input_id: input1
+    transform: null
+  layers:
+  - layer_id: norm1
+    layer_type: BatchNorm1d
+    args:
+      track_running_stats: true
+      momentum: 0.1
+      eps: 1.0e-05
+      num_features: 50
+      affine: true
+  - layer_id: layer1
+    layer_type: Linear
+    args:
+      in_features: 5
+      out_features: 50
+      bias: true
+  - layer_id: layer2
+    layer_type: Linear
+    args:
+      in_features: 50
+      out_features: 2
+      bias: true
+  forward:
+  - name: input_1
+    op: placeholder
+    target: input
+    args: []
+    kwargs: {}
+  - name: layer1
+    op: call_module
+    target: layer1
+    args:
+    - input_1
+    kwargs: {}
+  - name: norm1
+    op: call_module
+    target: norm1
+    args:
+    - layer1
+    kwargs: {}
+  - name: layer2
+    op: call_module
+    target: layer2
+    args:
+    - norm1
+    kwargs: {}
+  - name: output
+    op: output
+    target: output
+    args:
+    - layer2
+    kwargs: {}
