@@ -1,50 +1,50 @@
 models:
--   mlmodel_id: model1
-    inputs:
-    -   input_id: input1
-        transform: null
-    layers:
-    -   layer_id: layer1
-        layer_type: Conv1d
-        args:
-            stride:
-            - 1
-            padding:
-            - 0
-            dilation:
-            - 1
-            groups: 1
-            padding_mode: zeros
-            in_channels: 5
-            out_channels: 1
-            kernel_size:
-            - 2
-    -   layer_id: drop
-        layer_type: Dropout1d
-        args:
-            p: 0.5
-            inplace: false
-    forward:
-    -   name: input_1
-        op: placeholder
-        target: input
-        args: []
-        kwargs: {}
-    -   name: drop
-        op: call_module
-        target: drop
-        args:
-        - input_1
-        kwargs: {}
-    -   name: layer1
-        op: call_module
-        target: layer1
-        args:
-        - drop
-        kwargs: {}
-    -   name: output
-        op: output
-        target: output
-        args:
-        - layer1
-        kwargs: {}
+- mlmodel_id: model1
+  inputs:
+  - input_id: input1
+    transform: null
+  layers:
+  - layer_id: layer1
+    layer_type: Conv1d
+    args:
+      stride:
+      - 1
+      padding:
+      - 0
+      dilation:
+      - 1
+      groups: 1
+      padding_mode: zeros
+      in_channels: 5
+      out_channels: 1
+      kernel_size:
+      - 2
+  - layer_id: drop
+    layer_type: Dropout1d
+    args:
+      p: 0.5
+      inplace: false
+  forward:
+  - name: input_1
+    op: placeholder
+    target: input
+    args: []
+    kwargs: {}
+  - name: drop
+    op: call_module
+    target: drop
+    args:
+    - input_1
+    kwargs: {}
+  - name: layer1
+    op: call_module
+    target: layer1
+    args:
+    - drop
+    kwargs: {}
+  - name: output
+    op: output
+    target: output
+    args:
+    - layer1
+    kwargs: {}

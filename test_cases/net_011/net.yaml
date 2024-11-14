@@ -1,29 +1,29 @@
 models:
--   mlmodel_id: model1
-    inputs:
-    -   input_id: input1
-        transform: null
-    layers:
-    -   layer_id: flatten1
-        layer_type: Flatten
-        args:
-            start_dim: 1
-            end_dim: -1
-    forward:
-    -   name: input_1
-        op: placeholder
-        target: input
-        args: []
-        kwargs: {}
-    -   name: flatten1
-        op: call_module
-        target: flatten1
-        args:
-        - input_1
-        kwargs: {}
-    -   name: output
-        op: output
-        target: output
-        args:
-        - flatten1
-        kwargs: {}
+- mlmodel_id: model1
+  inputs:
+  - input_id: input1
+    transform: null
+  layers:
+  - layer_id: flatten1
+    layer_type: Flatten
+    args:
+      start_dim: 1
+      end_dim: -1
+  forward:
+  - name: input_1
+    op: placeholder
+    target: input
+    args: []
+    kwargs: {}
+  - name: flatten1
+    op: call_module
+    target: flatten1
+    args:
+    - input_1
+    kwargs: {}
+  - name: output
+    op: output
+    target: output
+    args:
+    - flatten1
+    kwargs: {}
