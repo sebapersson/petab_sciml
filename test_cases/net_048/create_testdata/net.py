@@ -7,8 +7,8 @@ from src.python.helper import make_yaml, test_nn
 class Net(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        self.norm1 = nn.BatchNorm3d(3)
-        self.norm2 = nn.BatchNorm3d(4)
+        self.norm1 = nn.InstanceNorm3d(3, affine=True)
+        self.norm2 = nn.InstanceNorm3d(4)
         self.layer1 = nn.Conv3d(3, 4, 5)
         self.layer2 = nn.Conv3d(4, 1, 5)
 
@@ -20,7 +20,7 @@ class Net(nn.Module):
         return x
 
 # Create a pytorch module, convert it to PEtab SciML, then save it to disk.
-dir_save = os.path.join(os.getcwd(), 'test_cases', "net_045")
+dir_save = os.path.join(os.getcwd(), 'test_cases', "net_048")
 net = Net()
 make_yaml(net, dir_save)
-test_nn(net, dir_save, ["layer1", "layer2", "norm1", "norm2"])
+test_nn(net, dir_save, ["layer1", "layer2", "norm1"])

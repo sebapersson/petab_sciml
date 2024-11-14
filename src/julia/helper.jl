@@ -177,15 +177,16 @@ function layer_ps_to_tidy(layer::Lux.Bilinear, ps::Union{NamedTuple, ComponentAr
     return vcat(df_weight, df_bias)
 end
 """
-    layer_ps_to_tidy(layer::Lux.BatchNorm, ...)::DataFrame
+    layer_ps_to_tidy(layer::Union{Lux.BatchNorm, Lux.InstanceNorm}, ...)::DataFrame
 
-For `BatchNorm` layer possible parameters that are saved to a DataFrame are:
+For `BatchNorm` and `InstanceNorm` layer possible parameters that are saved to a DataFrame
+are:
 - `scale/weight` of dimension `(num_features)`
 - `bias` of dimension `(num_features)`
 !!! note
     in Lux.jl the dimension argument `num_features` is chs (number of input channels)
 """
-function layer_ps_to_tidy(layer::Lux.BatchNorm, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
+function layer_ps_to_tidy(layer::Union{Lux.BatchNorm, Lux.InstanceNorm}, ps::Union{NamedTuple, ComponentArray}, netname::Symbol, layername::Symbol)::DataFrame
     @unpack affine, chs = layer
     affine == false && return DataFrame()
     df_weight = _ps_weight_to_tidy(ps, netname, layername; scale = true)
