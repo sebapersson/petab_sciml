@@ -1,7 +1,7 @@
-# Net Test Case 001
+# Net Test Case 024
 
 Test case for testing neural network import only.
 
 ## Neural-net
 
-A simple feed-forward network with only `Dense/Linear` layers and a `tanh` activation function.
+A simple feed-forward network testing `relu6` activation function.

@@ -1,7 +1,7 @@
-# Net Test Case 009
+# Net Test Case 021
 
 Test case for testing neural network import only.
 
 ## Neural-net
 
-A more complicated architecture, testing `Conv2d`, `MaxPool2d`, `Flatten` and `Linear`.
+A simple network testing only `Dropout1d` layer.

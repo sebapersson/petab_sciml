@@ -1,4 +1,4 @@
-# Net Test Case 001
+# Net Test Case 004
 
 Test case for testing neural network import only.
 
