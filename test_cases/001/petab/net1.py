@@ -1,6 +1,8 @@
-import torch
+import os
 import torch.nn as nn
 import torch.nn.functional as F
+from src.python.helper import make_yaml
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -15,3 +17,7 @@ class Net(nn.Module):
         x = F.tanh(x)
         x = self.layer3(x)
         return x
+
+dir_save = os.path.join(os.getcwd(), 'test_cases', "001", "petab")
+net = Net()
+make_yaml(net, dir_save, net_name="net1.yaml")
