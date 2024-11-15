@@ -236,27 +236,10 @@ function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lu
     return DataFrame()
 end
 
-function set_ps_layer!(ps::ComponentArray, layer::Lux.ConvTranspose, df_ps::DataFrame)::Nothing
-    @unpack kernel_size, use_bias, in_chs, out_chs = layer
-    _set_ps_weight!(ps, (kernel_size..., out_chs, in_chs), df_ps)
-    _set_ps_bias!(ps, (out_chs, ), df_ps, use_bias)
-    return nothing
-end
-function set_ps_layer!(ps::ComponentArray, layer::Lux.Conv, df_ps::DataFrame)::Nothing
-    @unpack kernel_size, use_bias, in_chs, out_chs = layer
-    _set_ps_weight!(ps, (kernel_size..., in_chs, out_chs), df_ps)
-    _set_ps_bias!(ps, (out_chs, ), df_ps, use_bias)
-    return nothing
-end
+
 function set_ps_layer!(ps::ComponentArray, layer::Lux.Dense, df_ps::DataFrame)::Nothing
     @unpack in_dims, out_dims, use_bias = layer
     _set_ps_weight!(ps, (out_dims, in_dims), df_ps)
-    _set_ps_bias!(ps, (out_dims, ), df_ps, use_bias)
-    return nothing
-end
-function set_ps_layer!(ps::ComponentArray, layer::Lux.Bilinear, df_ps::DataFrame)::Nothing
-    @unpack in1_dims, in2_dims, out_dims, use_bias = layer
-    _set_ps_weight!(ps, (out_dims, in1_dims, in2_dims), df_ps)
     _set_ps_bias!(ps, (out_dims, ), df_ps, use_bias)
     return nothing
 end
@@ -268,7 +251,8 @@ function _set_ps_weight!(ps::ComponentArray, weight_dims, df_ps::DataFrame)::Not
     @assert size(ps.weight) == weight_dims "layer size does not match ps.weight size"
     df_weights = df_ps[occursin.("weight_", df_ps[!, :parameterId]), :]
     for (i, id) in pairs(df_weights[!, :parameterId])
-        ix = parse.(Int64, collect(m.match for m in eachmatch(r"\d+", id))[(end-length(weight_dims)+1):end])
+        _ix = parse.(Int64, collect(m.match for m in eachmatch(r"\d+", id))[(end-length(weight_dims)+1):end])
+        ix = [x + 1 for x in _ix]
         ps.weight[ix...] = df_weights[i, :value]
     end
     return nothing
@@ -279,7 +263,8 @@ function _set_ps_bias!(ps::ComponentArray, bias_dims, df_ps::DataFrame, use_bias
     @assert size(ps.bias) == bias_dims "layer size does not match ps.bias size"
     df_bias = df_ps[occursin.("bias_", df_ps[!, :parameterId]), :]
     for (i, id) in pairs(df_bias[!, :parameterId])
-        ix = parse.(Int64, collect(m.match for m in eachmatch(r"\d+", id))[(end-length(bias_dims)+1):end])
+        _ix = parse.(Int64, collect(m.match for m in eachmatch(r"\d+", id))[(end-length(bias_dims)+1):end])
+        ix = [x + 1 for x in _ix]
         ps.bias[ix...] = df_bias[i, :value]
     end
     return nothing

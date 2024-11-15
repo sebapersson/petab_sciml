@@ -54,7 +54,8 @@ solutions = Dict(:llh => llh,
                  :tol_simulations => 1e-3,
                  :tol_nn_output => 1e-3,
                  :grad_llh_files => ["grad_llh.tsv"],
-                 :simulation_files => ["simulations.tsv"])
+                 :simulation_files => ["simulations.tsv"],
+                 :nn_output_files => ["nn_output1", "nn_output2", "nn_output3"])
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Simulated values
 simulations_df = deepcopy(measurements)
@@ -68,6 +69,19 @@ df_mech = DataFrame(parameterId = ["alpha", "delta", "beta"],
                     value = llh_grad[1:3])
 df_grad = vcat(df_mech, df_net)
 CSV.write(joinpath(@__DIR__, "..", "grad_llh.tsv"), df_grad, delim = '\t')
+# Input and output files for neural network
+df1 = DataFrame(netId = ["net1", "net1", "net1"],
+                ioId = ["input1", "input2", "output1"],
+                ioValue = [1.0, 1.0, nn_model([1.0, 1.0], x.p_net1, st)[1][1]])
+df2 = DataFrame(netId = ["net1", "net1", "net1"],
+                ioId = ["input1", "input2", "output1"],
+                ioValue = [2.0, 1.0, nn_model([2.0, 1.0], x.p_net1, st)[1][1]])
+df3 = DataFrame(netId = ["net1", "net1", "net1"],
+                ioId = ["input1", "input2", "output1"],
+                ioValue = [0.5, 0.7, nn_model([0.5, 0.7], x.p_net1, st)[1][1]])
+CSV.write(joinpath(@__DIR__, "..", "nn_output1.tsv"), df1, delim = '\t')
+CSV.write(joinpath(@__DIR__, "..", "nn_output2.tsv"), df2, delim = '\t')
+CSV.write(joinpath(@__DIR__, "..", "nn_output3.tsv"), df3, delim = '\t')
 # Write problem yaml
 problem_yaml = Dict(
     :format_version => 1,
