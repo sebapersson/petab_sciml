@@ -2,7 +2,7 @@ grad_llh_files:
   - "grad_llh.tsv"
 simulation_files:
   - "simulations.tsv"
-llh: 31.930734238962877
+llh: 29.730256446113128
 tol_grad_llh: 0.1
 nn_output_files:
   - "nn_output1"

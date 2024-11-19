@@ -4,7 +4,7 @@
 
 using FiniteDifferences, YAML
 include(joinpath(@__DIR__, "models.jl"))
-include(joinpath(@__DIR__, "..", "..", "helper.jl"))
+include(joinpath(@__DIR__, "..", "..", "..", "src", "julia", "helper.jl"))
 Random.seed!(123)
 
 function compute_nllh(x, oprob::ODEProblem, solver, measurements::DataFrame; abstol = 1e-9,
@@ -82,3 +82,21 @@ df3 = DataFrame(netId = ["net1", "net1", "net1"],
 CSV.write(joinpath(@__DIR__, "..", "nn_output1.tsv"), df1, delim = '\t')
 CSV.write(joinpath(@__DIR__, "..", "nn_output2.tsv"), df2, delim = '\t')
 CSV.write(joinpath(@__DIR__, "..", "nn_output3.tsv"), df3, delim = '\t')
+# Write problem yaml
+problem_yaml = Dict(
+    :format_version => 1,
+    :parameter_file => "parameters_ude.tsv",
+    :problems => Dict(
+        :condition_files => ["conditions.tsv"],
+        :measurement_files => ["measurements.tsv"],
+        :observable_files => ["observables.tsv"],
+        :sbml_files => ["lv.xml"],
+        :mapping_tables => "mapping_table.tsv"),
+    :extensions => Dict(
+        :petab_sciml => Dict(
+            :net_files => ["net1.yaml"],
+            :hybridization => Dict(
+                :net1 => Dict(
+                    :input => "ode",
+                    :output => "ode")))))
+YAML.write_file(joinpath(@__DIR__, "..", "petab", "problem_ude.yaml"), problem_yaml)

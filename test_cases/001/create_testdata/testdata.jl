@@ -87,12 +87,16 @@ problem_yaml = Dict(
     :format_version => 1,
     :parameter_file => "parameters_ude.tsv",
     :problems => Dict(
-        :condition_files => "conditions.tsv",
-        :measurement_files => "measurements.tsv",
-        :observable_files => "observables.tsv",
-        :sbml_files => "lv.xml",
-        :mapping_tables => "mapping_table.tsv",
-        :net_files => Dict(
-            :net1 => ["net1.yaml", "inode"]
-        )))
+        :condition_files => ["conditions.tsv"],
+        :measurement_files => ["measurements.tsv"],
+        :observable_files => ["observables.tsv"],
+        :sbml_files => ["lv.xml"],
+        :mapping_tables => "mapping_table.tsv"),
+    :extensions => Dict(
+        :petab_sciml => Dict(
+            :net_files => ["net1.yaml"],
+            :hybridization => Dict(
+                :net1 => Dict(
+                    :input => "ode",
+                    :output => "ode")))))
 YAML.write_file(joinpath(@__DIR__, "..", "petab", "problem_ude.yaml"), problem_yaml)

@@ -1,15 +1,20 @@
-format_version: 1
-parameter_file: parameters_ude.tsv
 problems:
-- condition_files:
-  - conditions.tsv
   measurement_files:
-  - measurements.tsv
+    - "measurements.tsv"
   observable_files:
-  - observables.tsv
+    - "observables.tsv"
   sbml_files:
-  - lv.xml
-  net_files:
-  - net1.py
-  mapping_tables:
-  - mapping_table.tsv
+    - "lv.xml"
+  condition_files:
+    - "conditions.tsv"
+  mapping_tables: "mapping_table.tsv"
+format_version: 1
+extensions:
+  petab_sciml:
+    hybridization:
+      net1:
+        output: "observable"
+        input: "ode"
+    net_files:
+      - "net1.yaml"
+parameter_file: "parameters_ude.tsv"

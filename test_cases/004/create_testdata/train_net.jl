@@ -5,7 +5,7 @@
 
 using Optimization, OptimizationOptimisers
 include(joinpath(@__DIR__, "models.jl"))
-include(joinpath(@__DIR__, "..", "..", "helper.jl"))
+include(joinpath(@__DIR__, "..", "..", "..", "src", "julia", "helper.jl"))
 Random.seed!(123)
 
 # The following should be fulfilled for input -> output:

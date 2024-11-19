@@ -5,7 +5,7 @@
 
 using QuasiMonteCarlo, ForwardDiff, Optimization, OptimizationOptimisers
 include(joinpath(@__DIR__, "models.jl"))
-include(joinpath(@__DIR__, "..", "..", "helper.jl"))
+include(joinpath(@__DIR__, "..", "..", "..", "src", "julia", "helper.jl"))
 Random.seed!(123)
 
 # The neural network should learn x, where x and y are the inputs. The network is trained
