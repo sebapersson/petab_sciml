@@ -4,7 +4,6 @@ import Random
 rng = Random.default_rng()
 
 # A Lux.jl Neural-Network model
-# A Lux.jl Neural-Network model
 nn_model1 = @compact(
     layer1 = Dense(2, 5, Lux.tanh),
     layer2 = Dense(5, 5, Lux.tanh),

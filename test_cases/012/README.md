@@ -1,4 +1,4 @@
-# Test Case 009
+# Test Case 012
 
 Test case for when two feed-forward neural networks where one is inside the ODE and the other sets model parameters.
 
