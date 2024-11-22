@@ -4,10 +4,5 @@ simulation_files:
   - "simulations.tsv"
 llh: 31.811451887930303
 tol_grad_llh: 0.1
-nn_output_files:
-  - "nn_output1"
-  - "nn_output2"
-  - "nn_output3"
 tol_simulations: 0.001
 tol_llh: 0.001
-tol_nn_output: 0.001

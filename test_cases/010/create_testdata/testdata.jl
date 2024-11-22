@@ -24,7 +24,7 @@ function compute_nllh(x, oprob::ODEProblem, solver, measurements::DataFrame; abs
         nllh += log(σ) + 0.5 * log(2π) + 0.5 * (mprey[i] - model_output)^2 / σ^2
     end
     for i in eachindex(mpredator)
-        model_output = nn_model2([1.3, predator[i]], x.p_net2, st2)[1][1]
+        model_output = nn_model2([x[1], predator[i]], x.p_net2, st2)[1][1]
         nllh += log(σ) + 0.5 * log(2π) + 0.5 * (mpredator[i] - model_output)^2 / σ^2
     end
     return nllh
@@ -79,12 +79,12 @@ CSV.write(joinpath(@__DIR__, "..", "grad_llh.tsv"), df_grad, delim = '\t')
 problem_yaml = Dict(
     :format_version => 1,
     :parameter_file => "parameters_ude.tsv",
-    :problems => Dict(
+    :problems => [Dict(
         :condition_files => ["conditions.tsv"],
         :measurement_files => ["measurements.tsv"],
         :observable_files => ["observables.tsv"],
         :sbml_files => ["lv.xml"],
-        :mapping_tables => "mapping_table.tsv"),
+        :mapping_tables => "mapping_table.tsv")],
     :extensions => Dict(
         :petab_sciml => Dict(
             :net_files => ["net1.yaml", "net2.yaml"],

@@ -53,7 +53,6 @@ solutions = Dict(:llh => llh,
                  :tol_llh => 1e-3,
                  :tol_grad_llh => 1e-1,
                  :tol_simulations => 1e-3,
-                 :tol_nn_output => 1e-3,
                  :grad_llh_files => ["grad_llh.tsv"],
                  :simulation_files => ["simulations.tsv"])
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
@@ -73,12 +72,12 @@ CSV.write(joinpath(@__DIR__, "..", "grad_llh.tsv"), df_grad, delim = '\t')
 problem_yaml = Dict(
     :format_version => 1,
     :parameter_file => "parameters_ude.tsv",
-    :problems => Dict(
+    :problems => [Dict(
         :condition_files => ["conditions.tsv"],
         :measurement_files => ["measurements.tsv"],
         :observable_files => ["observables.tsv"],
         :sbml_files => ["lv.xml"],
-        :mapping_tables => "mapping_table.tsv"),
+        :mapping_tables => "mapping_table.tsv")],
     :extensions => Dict(
         :petab_sciml => Dict(
             :net_files => ["net1.yaml", "net2.yaml"],

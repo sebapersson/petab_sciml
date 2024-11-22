@@ -1,13 +1,13 @@
 problems:
-  measurement_files:
-    - "measurements.tsv"
-  observable_files:
-    - "observables.tsv"
-  sbml_files:
-    - "lv.xml"
-  condition_files:
-    - "conditions.tsv"
-  mapping_tables: "mapping_table.tsv"
+  - measurement_files:
+      - "measurements.tsv"
+    observable_files:
+      - "observables.tsv"
+    sbml_files:
+      - "lv.xml"
+    condition_files:
+      - "conditions.tsv"
+    mapping_tables: "mapping_table.tsv"
 format_version: 1
 extensions:
   petab_sciml:
