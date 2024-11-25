@@ -6,12 +6,12 @@ import os
 sys.path.insert(1, os.path.join(os.getcwd(), 'mkstd', "examples", "petab_sciml"))
 from petab_sciml_standard import Input, MLModel, PetabScimlStandard
 
-def make_yaml(net, dir_save):
+def make_yaml(net, dir_save, net_name="net.yaml"):
     mlmodel = MLModel.from_pytorch_module(
     module=net, mlmodel_id="model1", inputs=[Input(input_id="input1")])
     petab_sciml_mlmodel = PetabScimlStandard.model(models=[mlmodel])
     PetabScimlStandard.save_data(
-        data=petab_sciml_mlmodel, filename=os.path.join(dir_save, "net.yaml")
+        data=petab_sciml_mlmodel, filename=os.path.join(dir_save, net_name)
     )
 
 def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):

@@ -232,10 +232,9 @@ end
 
 Pooling layers do not have parameters.
 """
-function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.AdaptiveMeanPool, Lux.FlattenLayer, Lux.Dropout, Lux.AlphaDropout}, ::Union{NamedTuple, ComponentArray}, ::Symbol, ::Symbol)::DataFrame
+function layer_ps_to_tidy(layer::Union{Lux.MaxPool, Lux.MeanPool, Lux.LPPool, Lux.AdaptiveMaxPool, Lux.AdaptiveMeanPool, Lux.FlattenLayer, Lux.Dropout, Lux.AlphaDropout}, ::Union{NamedTuple, ComponentArray, Vector{<:AbstractFloat}}, ::Symbol, ::Symbol)::DataFrame
     return DataFrame()
 end
-
 
 function set_ps_layer!(ps::ComponentArray, layer::Lux.Dense, df_ps::DataFrame)::Nothing
     @unpack in_dims, out_dims, use_bias = layer
@@ -243,7 +242,26 @@ function set_ps_layer!(ps::ComponentArray, layer::Lux.Dense, df_ps::DataFrame)::
     _set_ps_bias!(ps, (out_dims, ), df_ps, use_bias)
     return nothing
 end
-function set_ps_layer!(::ComponentArray, ::Union{Lux.MaxPool}, ::DataFrame)::Nothing
+function set_ps_layer!(ps::ComponentArray, layer::Lux.Conv, df_ps::DataFrame)::Nothing
+    @unpack kernel_size, use_bias, in_chs, out_chs = layer
+    @assert size(ps.weight) == (kernel_size..., in_chs, out_chs) "Error in dimension of weights for Conv layer"
+    _ps_weight = _get_ps_layer(df_ps, length((kernel_size..., in_chs, out_chs)), :weight)
+    if length(kernel_size) == 1
+        ps_weight = _reshape_array(_ps_weight, [1 => 3, 2 => 2, 3 => 1])
+    elseif length(kernel_size) == 2
+        ps_weight = _reshape_array(_ps_weight, [1 => 4, 2 => 3, 3 => 2, 4 => 1])
+    elseif length(kernel_size) == 3
+        ps_weight = _reshape_array(_ps_weight, [1 => 5, 2 => 4, 3 => 3, 4 => 2, 5 => 1])
+    end
+    @views ps.weight .= ps_weight
+
+    use_bias == false && return nothing
+    @assert size(ps.bias) == (out_chs, ) "Error in dimension of bias for Conv layer"
+    ps_bias = _get_ps_layer(df_ps, 1, :bias)
+    @views ps.bias .= ps_bias
+    return nothing
+end
+function set_ps_layer!(::Union{ComponentArray, Vector{<:AbstractFloat}}, ::Union{Lux.MaxPool, Lux.FlattenLayer}, ::DataFrame)::Nothing
     return nothing
 end
 
@@ -332,4 +350,47 @@ function _reshape_array(x, mapping)
         xout[inew...] = x[i]
     end
     return xout
+end
+
+function _get_ps_layer(df_layer::DataFrame, lendim::Int64, which::Symbol)
+    if which == :weight
+        df = df_layer[occursin.("weight_", df_layer[!, :parameterId]), :]
+    else
+        df = df_layer[occursin.("bias_", df_layer[!, :parameterId]), :]
+    end
+    ix = Any[]
+    for pid in df[!, :parameterId]
+        _ix = parse.(Int64, collect(m.match for m in eachmatch(r"\d+", pid))[((end-lendim+1):end)])
+        # Python -> Julia indexing
+        _ix .+= 1
+        push!(ix, Tuple(_ix))
+    end
+    out = zeros(maximum(ix))
+    for i in eachindex(ix)
+        out[ix[i]...] = df[i, :value]
+    end
+    return out
+end
+
+function df_to_array(df::DataFrame, order_jl::Vector{String}, order_py::Vector{String})
+    if df[!, :ix] isa Vector{Int64}
+        ix = df[!, :ix] .+ 1
+        dims = (length(ix), )
+    else
+        ix = [Tuple(parse.(Int64, split(ix, ";")) .+ 1) for ix in df[!, :ix]]
+        dims = maximum(ix)
+    end
+    out = zeros(dims)
+    for i in eachindex(ix)
+        out[ix[i]...] = df[i, :value]
+    end
+    length(size(out)) == 1 && return out
+    # At this point the array follows a multidimensional PyTorch indexing. Therefore the
+    # array must be reshaped to Julia indexing
+    imap = zeros(Int64, length(order_jl))
+    for i in eachindex(order_jl)
+        imap[i] = findfirst(x -> x == order_jl[i], order_py)
+    end
+    map = collect(1:length(order_py)) .=> imap
+    return _reshape_array(out, map)
 end
