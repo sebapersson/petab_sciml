@@ -1,0 +1,8 @@
+grad_llh_files:
+  - "grad_llh.tsv"
+simulation_files:
+  - "simulations.tsv"
+llh: 66.25551345753026
+tol_grad_llh: 0.1
+tol_simulations: 0.001
+tol_llh: 0.001
