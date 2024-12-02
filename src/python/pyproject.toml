@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "petab_sciml"
+version = "0.0.1"
+authors = [
+  {name = "Sebastian Persson"},
+  {name = "Dilan Pathirana"},
+]
+dependencies = [
+  "mkstd",
+]
+requires-python = ">=3.8"
+description = "Specify parameter estimation problems and hybrid models."
+readme = "README.md"
+license = {file = "LICENSE.txt"}  # TODO
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Repository = "https://github.com/sebapersson/petab_sciml"
+"Bug Tracker" = "https://github.com/sebapersson/petab_sciml/issues"
