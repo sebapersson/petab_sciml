@@ -1,9 +1,7 @@
 nn_model = @compact(
-    layer1 = Conv((5, 5), 1 => 2; cross_correlation = true),
-    layer2 = Conv((2, 5), 2 => 1; cross_correlation = true),
+    layer1 = Conv((2, 5), 1 => 1; cross_correlation = true),
 ) do x
-    embed = layer1(x)
-    out = layer2(embed)
+    out = layer1(x)
     @return out
 end
 
