@@ -1,0 +1,3 @@
+observableId	observableFormula	noiseFormula	noiseDistribution
+observable_predator	predator	1	normal
+observable_prey	prey	1	normal

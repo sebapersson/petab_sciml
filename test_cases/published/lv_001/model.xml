@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model id="model" name="model">
+    <listOfCompartments>
+      <compartment id="Compartment" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="prey" compartment="Compartment" initialAmount="0.44249296" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="predator" compartment="Compartment" initialAmount="4.6280594" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="alpha_" name="alpha_" value="1.3" constant="true"/>
+      <parameter id="beta_" name="beta_" value="0.9" constant="true"/>
+      <parameter id="gamma_" name="gamma_" value="0.8" constant="true"/>
+      <parameter id="delta_" name="delta_" value="1.8" constant="true"/>
+      <parameter id="prey_birth" name="prey_birth" constant="false"/>
+      <parameter id="prey_predation" name="prey_predation" constant="false"/>
+      <parameter id="predator_predation" name="predator_predation" constant="false"/>
+      <parameter id="predator_death" name="predator_death" constant="false"/>
+    </listOfParameters>
+    <listOfRules>
+      <rateRule variable="prey">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> prey_birth </ci>
+            <ci> prey_predation </ci>
+          </apply>
+        </math>
+      </rateRule>
+      <rateRule variable="predator">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> predator_predation </ci>
+            <ci> predator_death </ci>
+          </apply>
+        </math>
+      </rateRule>
+      <assignmentRule variable="prey_birth">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> alpha_ </ci>
+            <ci> prey </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="prey_predation">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <minus/>
+              <ci> beta_ </ci>
+            </apply>
+            <ci> prey </ci>
+            <ci> predator </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="predator_predation">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> delta_ </ci>
+            <ci> prey </ci>
+            <ci> predator </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="predator_death">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <minus/>
+              <ci> gamma_ </ci>
+            </apply>
+            <ci> predator </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+    </listOfRules>
+  </model>
+</sbml>
