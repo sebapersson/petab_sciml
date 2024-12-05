@@ -8,7 +8,7 @@ The SBML model for this problem is given as:
 
 $$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - \beta \cdot \text{prey} \cdot \text{predator} $$
 
-$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma predator - \delta \cdot \text{predator}$$
+$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma \cdot \text{predator} \cdot \text{prey} - \delta \cdot \text{predator}$$
 
 ## Data-Driven Model Structure
 
@@ -20,8 +20,8 @@ $$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma predator - \delta \cd
 | layer2  | Flatten() | identity                |
 | layer3  | Linear(in_features = 36, out_features = 1, bias = true) | relu            |
 
-The inputs to the network are provided by the `input_data.tsv` file.
+The inputs to the network are provided by the `input_data.tsv` file and the output replaces the `gamma` parameter.
 
 ## Additional notes
 
-Providing input data as a TSV file can be impractical in certain applications, such as when data consists of large images. Therefore, the PEtab SciML standard does not impose a specific input data format. Rather, this and test-case 015 aims to ensure that an implementation can handle input provided via input files. Because, once it is possible to read one input into an array, adding support for other formats should be relatively straightforward. Alternatively, it is also relatively straightforward to allow users to provide their own data import functions, that takes the file path as input, and outputs a suitable array/tensor.
+Providing input data as a TSV file can be impractical in certain applications, such as when data consists of large images. Therefore, the PEtab SciML standard does not impose a specific input data format. Rather, this and test-case 016 aims to ensure that an implementation can handle input provided via input files. Because, once it is possible to read one input into an array, adding support for other formats should be relatively straightforward. Alternatively, it is also relatively straightforward to allow users to provide their own data import functions, that takes the file path as input, and outputs a suitable array/tensor.
