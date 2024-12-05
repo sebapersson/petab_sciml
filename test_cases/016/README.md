@@ -1,6 +1,6 @@
-# Test Case 015
+# Test Case 016
 
-Test case for when a feed-forward neural network sets one of the model parameters, with the input to the network being provided as a PyTorch file with PyTorch indexing. Since the network is not a part of the ODE model's right-hand side (RHS), it should only be evaluated once per likelihood computation for computational efficiency.
+Test case for when a feed-forward neural network sets one of the model parameters, with the input to the network being provided as a PyTorch file with PyTorch indexing. The input file differs by condition. Since the network is not a part of the ODE model's right-hand side (RHS), it should only be evaluated once per likelihood computation for computational efficiency.
 
 ## Model Structure
 
@@ -8,7 +8,7 @@ The SBML model for this problem is given as:
 
 $$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - \beta \cdot \text{prey} \cdot \text{predator} $$
 
-$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma predator - \delta \cdot \text{predator}$$
+$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma \cdot \text{prey} \cdot \text{predator} - \delta \cdot \text{predator}$$
 
 ## Data-Driven Model Structure
 

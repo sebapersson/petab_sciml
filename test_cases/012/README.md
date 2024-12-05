@@ -1,14 +1,22 @@
 # Test Case 012
 
-Test case for when two feed-forward neural networks where one is inside the ODE and the other sets model parameters.
+Test case with two feed-forward neural networks where one is inside the ODE and the other sets a model parameter.
 
 ## Model Structure
+
+Lotka-Volterra model with two neural networks:
+
+$$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - net2 \cdot \text{prey} \cdot \text{predator} $$
+
+$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = net1 - \delta \cdot \text{predator}$$
 
 The SBML model for this problem is given as:
 
 $$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - \beta \cdot \text{prey} \cdot \text{predator} $$
 
-$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = net1 - \delta \cdot \text{predator}$$
+$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma - \delta \cdot \text{predator}$$
+
+Hence, the neural network replaces $\gamma$ and $\beta$ during the import.
 
 ## Data-Driven Model Structure
 

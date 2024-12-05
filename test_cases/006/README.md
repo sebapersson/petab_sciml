@@ -8,7 +8,7 @@ The SBML model for this problem is given as:
 
 $$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - \beta \cdot \text{prey} \cdot \text{predator} $$
 
-$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma predator - \delta \cdot \text{predator}$$
+$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma \cdot \text{predator} - \delta \cdot \text{prey} \cdot \text{predator}$$
 
 ## Data-Driven Model Structure
 
@@ -20,4 +20,4 @@ $$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma predator - \delta \cd
 | layer2  | Linear(in_features = 5, out_features = 5, bias = true) | tanh                |
 | layer3  | Linear(in_features = 5, out_features = 1, bias = true) | identity            |
 
-The inputs to the network are provided by the `input1` and `alpha`, where `alpha` noticeable is a parameter that is estimated, and appears in the ODE.
+The inputs to the network are provided by the `input1` and `alpha`, where `alpha` is notably a parameter that is estimated, and appears in the ODE.

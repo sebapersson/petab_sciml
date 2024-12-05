@@ -8,11 +8,11 @@ The SBML model for this problem is given as:
 
 $$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - \beta \cdot \text{prey} \cdot \text{predator} $$
 
-$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma predator - \delta \cdot \text{predator}$$
+$$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma \cdot \text{predator} - \delta \cdot \text{prey} \cdot \text{predator}$$
 
 ## Data-Driven Model Structure
 
-`N` is a feed-forward neural network with the following specification:
+`N` is a feed-forward neural network replacing the `gamma` parameter with the following specification:
 
 | LayerID | Layer                                                  | Activation Function |
 |---------|--------------------------------------------------------|---------------------|

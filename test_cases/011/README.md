@@ -1,10 +1,10 @@
 # Test Case 011
 
-Test case for two feed-forward neural network are a part of the ODE right-hand side.
+Test case for when two feed-forward neural network are part of the ODE right-hand side.
 
 ## Model Structure
 
-Lotka-Volterra model with a neural network for one of the interaction terms:
+Lotka-Volterra model with a neural network for one of the interaction terms and another neural network for a growth term:
 
 $$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = net2 - \beta \cdot \text{prey} \cdot \text{predator} $$
 
@@ -12,11 +12,11 @@ $$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = net1 - \delta \cdot \text{pr
 
 The SBML model for this problem is given as:
 
-$$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha \cdot \text{prey} - \beta \cdot \text{prey} \cdot \text{predator} $$
+$$\frac{\mathrm{d} \text{prey}}{\mathrm{d} t} = \alpha - \beta \cdot \text{prey} \cdot \text{predator} $$
 
 $$\frac{\mathrm{d} \text{predator}}{\mathrm{d} t} = \gamma - \delta \cdot \text{predator}$$
 
-Hence, the neural network replaces $\gamma$ during the import.
+Hence, the neural networks replace $\gamma$ and $\alpha$ during the import.
 
 ## Data-Driven Model Structure
 
