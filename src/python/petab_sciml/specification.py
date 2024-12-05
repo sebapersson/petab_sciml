@@ -22,11 +22,14 @@ class Input(BaseModel):
     transform: dict | None = Field(
         default=None
     )  # TODO class of supported transforms
-    dim: int
+    shape: tuple[int]
 
 
-class Output(Input):
-    transform: None = None
+class Output(BaseModel):
+    """Specify the output layer."""
+
+    output_id: str
+    shape: tuple[int]
 
 
 class Layer(BaseModel):
@@ -233,7 +236,7 @@ class MLModel(BaseModel):
     mlmodel_id: str
 
     inputs: list[Input]
-    outputs: list[Input]
+    outputs: list[Output]
 
     layers: list[Layer]
     """The components of the model (e.g., layers of a neural network)."""
