@@ -72,6 +72,7 @@ rename!(simulations_df, "measurement" => "simulation")
 simulations_df.simulation .= simulated_values
 CSV.write(joinpath(@__DIR__, "..", "simulations.tsv"), simulations_df, delim = '\t')
 # Gradient values
+df_net = nn_ps_to_tidy(nn_model, solopt.u, :net1)
 df_net = deepcopy(df_ps_nn)
 df_net.value .= llh_grad.p_net1
 df_mech = DataFrame(parameterId = ["alpha", "delta", "beta"],
