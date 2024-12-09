@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import ast
 import inspect
@@ -11,7 +12,7 @@ from pydantic import BaseModel, Field
 from mkstd import YamlStandard
 
 
-__all__ = ["Input", "Layer", "Node", "MLModel", "MLModels", "PetabScimlStandard"]
+__all__ = ["Input", "Layer", "Node", "MLModel", "MLModels", "Output", "PetabScimlStandard"]
 
 
 class Input(BaseModel):
@@ -21,6 +22,14 @@ class Input(BaseModel):
     transform: dict | None = Field(
         default=None
     )  # TODO class of supported transforms
+    shape: tuple[int]
+
+
+class Output(BaseModel):
+    """Specify the output layer."""
+
+    output_id: str
+    shape: tuple[int]
 
 
 class Layer(BaseModel):
@@ -173,6 +182,51 @@ def get_module_layer_type(module: nn.Module) -> str:
     return type(module).__name__
 
 
+def node_to_str(args: list[Node], pytorch_nodes: list[Node]) -> list[str]:
+    """Convert nodes in layer/method inputs to node names.
+
+    Args:
+        args:
+            The nodes.
+        pytorch_nodes:
+            All PyTorch nodes, from an FX symbolic trace.
+
+    Returns:
+        The converted nodes.
+    """
+    return [str(arg) if arg in pytorch_nodes else arg for arg in args]
+
+
+def str_to_node(all_args: tuple[Any], state: dict[str, Node], index: int | None = None) -> tuple[Any]:
+    """Convert node names in layer inputs to nodes.
+
+    For example, ``torch.stack`` stacks all tensors in its first argument.
+    The first argument is therefore a nested iterable. In this iterable, each tensor
+    will be some node in the preceding computational graph. On disk, these nodes are
+    their names. This substitutes the names for their nodes.
+
+    Args:
+        all_args:
+            All layer/method inputs/arguments, if ``index`` is specified. Otherwise,
+            the nodes.
+        state:
+            The nodes in the computational graph preceding these args.
+            Keys are node names, values are the nodes.
+        index:
+            The index of ``all_args`` that will be converted.
+
+    Returns:
+        The arguments, with conversions only at ``index`` if specified.
+    """
+    if index is None:
+        return tuple([state[arg] if arg in state else arg for arg in all_args])
+    return tuple(
+        list(all_args[:index])
+        + [tuple([state[arg] if arg in state else arg for arg in all_args[index]])]
+        + list(all_args[index+1:])
+    )
+
+
 class MLModel(BaseModel):
     """An easy-to-use format to specify simple deep ML models.
 
@@ -182,6 +236,7 @@ class MLModel(BaseModel):
     mlmodel_id: str
 
     inputs: list[Input]
+    outputs: list[Output]
 
     layers: list[Layer]
     """The components of the model (e.g., layers of a neural network)."""
@@ -190,7 +245,7 @@ class MLModel(BaseModel):
 
     @staticmethod
     def from_pytorch_module(
-        module: nn.Module, mlmodel_id: str, inputs: list[Input]
+        module: nn.Module, mlmodel_id: str, inputs: list[Input], outputs: list[Output],
     ) -> MLModel:
         """Create a PEtab SciML ML model from a pytorch module."""
         layers = []
@@ -208,28 +263,30 @@ class MLModel(BaseModel):
             layer_ids.append(layer_id)
 
         nodes = []
-        node_names = []
         pytorch_nodes = list(torch.fx.symbolic_trace(module).graph.nodes)
         for pytorch_node in pytorch_nodes:
             op = pytorch_node.op
             target = pytorch_node.target
+            args = node_to_str(args=pytorch_node.args, pytorch_nodes=pytorch_nodes)
             if op == "call_function":
                 target = pytorch_node.target.__name__
+                if target == "stack":
+                    args[0] = node_to_str(args=args[0], pytorch_nodes=pytorch_nodes)
+            if op == "output" and isinstance(args[0], tuple):
+                # handle multiple outputs
+                args[0] = node_to_str(args=args[0], pytorch_nodes=pytorch_nodes)
+
             node = Node(
                 name=pytorch_node.name,
-                op=pytorch_node.op,
+                op=op,
                 target=target,
-                args=[
-                    (arg if arg not in pytorch_nodes else str(arg))
-                    for arg in pytorch_node.args
-                ],
+                args=args,
                 kwargs=pytorch_node.kwargs,
             )
             nodes.append(node)
-            node_names.append(node.name)
 
         mlmodel = MLModel(
-            mlmodel_id=mlmodel_id, inputs=inputs, layers=layers, forward=nodes
+            mlmodel_id=mlmodel_id, inputs=inputs, outputs=outputs, layers=layers, forward=nodes
         )
         return mlmodel
 
@@ -268,19 +325,31 @@ class MLModel(BaseModel):
                 case "placeholder":
                     state[node.name] = graph.placeholder(node.target)
                 case "call_function":
-                    if node.target in ["flatten"]:
-                        function = getattr(torch, node.target)
-                    else:
-                        function = getattr(nn.functional, node.target)
+                    call_function_module = nn.functional
+                    if node.target in ["flatten", "stack"]:
+                        call_function_module = torch
+                    function = getattr(call_function_module, node.target)
+                    if node.target in ["stack"]:
+                        args = str_to_node(all_args=args, state=state, index=0)
                     state[node.name] = graph.call_function(
                         function, args, kwargs
+                    )
+                case "call_method":
+                    state[node.name] = graph.call_method(
+                        node.target, args, kwargs
                     )
                 case "call_module":
                     state[node.name] = graph.call_module(
                         node.target, args, kwargs
                     )
                 case "output":
-                    graph.output(args[0])
+                    if isinstance(args[0], list):
+                        args = str_to_node(all_args=args[0], state=state)
+                    else:
+                        args = args[0]
+                    graph.output(args)
+                case _:
+                    raise ValueError(f"Unhandled op: {node.op}")
 
         return torch.fx.GraphModule(_PytorchModule(), graph)
 
