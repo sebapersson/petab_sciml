@@ -1,6 +1,6 @@
 # Test Case 009
 
-Test case for when two feed-forward neural network sets one of the model parameter each, with the input to each network provided by two parameters from the parameters table. Since the networks are not a part of the ODE model's right-hand side (RHS), they should only be evaluated once per likelihood computation for computational efficiency.
+Test case for when two feed-forward neural networks set one of the model parameter each, with the input to each network provided by two parameters from the parameters table. Since the networks are not a part of the ODE model's right-hand side (RHS), they should only be evaluated once per likelihood computation for computational efficiency.
 
 ## Model Structure
 
