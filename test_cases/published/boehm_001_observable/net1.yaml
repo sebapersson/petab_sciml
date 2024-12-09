@@ -1,5 +1,5 @@
 models:
-- mlmodel_id: model1
+- mlmodel_id: net1
   inputs:
   - input_id: input1
     transform: null
