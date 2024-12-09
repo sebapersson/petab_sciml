@@ -4,4 +4,4 @@ Test case for testing neural network import only.
 
 ## Neural-net
 
-A mixed network architexture with `LayerNorm`, `Conv3d` and `Flatten` layers, where one layer does not have bias.
+A mixed network architecture with `LayerNorm`, `Conv3d` and `Flatten` layers, where one layer does not have bias.
