@@ -1,4 +1,4 @@
-using Lux, CSV, DataFrames, StableRNGs, YAML
+using Lux, CSV, DataFrames, StableRNGs, YAML, HDF5
 
 include(joinpath(@__DIR__, "helper.jl"))
 

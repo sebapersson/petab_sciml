@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import os
 
-from src.python.helper import make_yaml, test_nn, get_dim, extract_numbers
+from src.python.helper import make_yaml, test_nn
 
 class Net(nn.Module):
     def __init__(self) -> None:

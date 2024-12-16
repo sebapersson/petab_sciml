@@ -1,7 +1,7 @@
 import torch
 import sys
-import pandas as pd
 import os
+import h5py
 
 sys.path.insert(1, os.path.join(os.getcwd(), 'mkstd', "examples", "petab_sciml"))
 from petab_sciml_standard import Input, MLModel, PetabScimlStandard
@@ -19,19 +19,19 @@ def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):
         if not layer_names is None:
             for layer_name in layer_names:
                 layer = getattr(net, layer_name)
-                df = pd.read_csv(os.path.join(dir_save, "net_ps_" + str(i) + ".tsv"), delimiter='\t')
-                ps_weight = get_ps_layer(df, layer_name, "weight")
+                ps_h5 = h5py.File(os.path.join(dir_save, "net_ps_" + str(i) + ".h5"), "r")
+                ps_weight = ps_h5[layer_name]["weight"][:]
                 with torch.no_grad():
-                    layer.weight[:] = ps_weight
+                    layer.weight[:] = torch.from_numpy(ps_weight)
                 if hasattr(layer, "bias") and (not layer.bias is None):
-                    ps_bias = get_ps_layer(df, layer_name, "bias")
+                    ps_bias = ps_h5[layer_name]["bias"][:]
                     with torch.no_grad():
-                        layer.bias[:] = ps_bias
+                        layer.bias[:] = torch.from_numpy(ps_bias)
 
-        df_input = pd.read_csv(os.path.join(dir_save, "net_input_" + str(i) + ".tsv"), delimiter='\t')
-        df_output = pd.read_csv(os.path.join(dir_save, "net_output_" + str(i) + ".tsv"), delimiter='\t')
-        input = read_array(df_input)
-        output_ref = read_array(df_output)
+        input_h5 = h5py.File(os.path.join(dir_save, "net_input_" + str(i) + ".h5"))
+        output_h5 = h5py.File(os.path.join(dir_save, "net_output_" + str(i) + ".h5"))
+        input = torch.from_numpy(input_h5["input"][:])
+        output_ref = torch.from_numpy(output_h5["output"][:])
         if dropout == False:    
             output = net.forward(input)
         else:
@@ -40,36 +40,3 @@ def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):
                 output += net.forward(input)
             output /= 50000
         torch.testing.assert_close(output_ref, output, atol=atol, rtol=0.0)
-
-
-def extract_numbers(series):
-    out = [[int(part) for part in s.split('_') if part] for s in series]
-    return out
-
-def get_dim(ix):
-    max_values = [max(column) + 1 for column in zip(*ix)]
-    return max_values
-
-def get_ps_layer(df, layer_name, ps_name):
-    i_layer = df.loc[:, "parameterId"].str.startswith("net_" + layer_name + "_" + ps_name)
-    df_layer = df.loc[i_layer, :]
-    df_layer.reset_index(drop=True, inplace=True)
-    ix = df_layer.loc[:, "parameterId"]
-    ix = extract_numbers(ix.str.replace("net_" + layer_name + "_" + ps_name, ""))
-    dims = get_dim(ix)
-    out = torch.ones(*dims)
-    for i in range(df_layer.shape[0]):
-        _ix = ix[i]
-        out[*_ix] = df_layer.loc[i, "value"]
-
-    return out
-
-def read_array(df):
-    ix = df.loc[:, "ix"].astype("string")
-    ix = ix.apply(lambda x: [int(i) for i in x.split(';')]).tolist()
-    dims = get_dim(ix)
-    out = torch.ones(*dims)
-    for i in range(df.shape[0]):
-        _ix = ix[i]
-        out[*_ix] = df.loc[i, "value"]
-    return out
