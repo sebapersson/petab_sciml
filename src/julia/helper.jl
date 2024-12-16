@@ -8,14 +8,14 @@ using Catalyst: @unpack
 function write_yaml(dirsave, input_order_jl, input_order_py, output_order_jl, output_order_py; ps::Bool=true, dropout::Bool=false)::Nothing
     solutions = Dict(
         :net_file => "net.yaml",
-        :net_input => ["net_input_1.tsv", "net_input_2.tsv", "net_input_3.tsv"],
-        :net_output => ["net_output_1.tsv", "net_output_2.tsv", "net_output_3.tsv"],
+        :net_input => ["net_input_1.h5", "net_input_2.h5", "net_input_3.h5"],
+        :net_output => ["net_output_1.h5", "net_output_2.h5", "net_output_3.h5"],
         :input_order_jl => input_order_jl,
         :input_order_py => input_order_py,
         :output_order_jl => output_order_jl,
         :output_order_py => output_order_py)
     if ps
-        solutions[:net_ps] = ["net_ps_1.tsv", "net_ps_2.tsv", "net_ps_3.tsv"]
+        solutions[:net_ps] = ["net_ps_1.h5", "net_ps_2.h5", "net_ps_3.h5"]
     end
     if dropout
         solutions[:dropout] = 40000
