@@ -1,4 +1,4 @@
-netId	ioId	ioValue
-net1	input1	prey
-net1	input2	predator
-net1	output1	gamma
+petab.MODEL_ENTITY_ID	petab.PETAB_ENTITY_ID
+net1.input1	prey
+net1.input2	predator
+net1.output1	gamma
