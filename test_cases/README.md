@@ -2,6 +2,8 @@
 
 This directory contains the test cases for the PEtab SciML extension. The tests are divided into two parts: those testing hybrid models and those testing pure neural network import. The rationale is that once the hybrid interface works with a suitable library (e.g., Equinox, Lux.jl...), then, as ideally implementation should modularize the neural network and dynamic parts, the combination should work.
 
+It should be noted that for neural networks, inputs, parameters (including gradients), and potential outputs are provided in the HDF5 file format, where arrays are stored in row-major format following PyTorch indexing. Therefore, in addition to accounting for the indexing, importers in column-major languages (e.g., Julia, R) need to account for the memory ordering.
+
 ## Hybrid models test
 
 For each case, the following things are tested:
