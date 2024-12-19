@@ -69,8 +69,8 @@ nn_ps_to_h5(nn_model, llh_grad.p_net1, joinpath(@__DIR__, "..", "grad_net1.hf5")
 
 ## Write PEtabProblem files
 mapping_table = DataFrame(
-    Dict("petab.MODEL_ENTITY_ID" => ["net1.input1", "net1.input2", "net1.output1"],
-         "petab.PETAB_ENTITY_ID" => ["prey", "predator", "predator_dot"]))
+    Dict("petabEntityId" => ["net1.input1", "net1.input2", "net1.output1"],
+         "modelEntityId" => ["prey", "predator", "predator_dot"]))
 CSV.write(joinpath(@__DIR__, "..", "petab", "mapping_table.tsv"), mapping_table; delim = '\t')
 problem_yaml = Dict(
     :format_version => 2,

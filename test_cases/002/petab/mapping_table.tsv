@@ -1,4 +1,4 @@
-petab.MODEL_ENTITY_ID	petab.PETAB_ENTITY_ID
+petabEntityId	modelEntityId
 net1.input1	prey
 net1.input2	predator
 net1.output1	predator_dot

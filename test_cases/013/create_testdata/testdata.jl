@@ -82,9 +82,9 @@ nn_ps_to_h5(nn_model2, llh_grad.p_net2, joinpath(@__DIR__, "..", "grad_net2.hf5"
 
 # Write problem yaml
 mapping_table = DataFrame(
-    Dict("petab.MODEL_ENTITY_ID" => ["net1.input1", "net1.input2", "net1.output1",
+    Dict("petabEntityId" => ["net1.input1", "net1.input2", "net1.output1",
                                      "net2.input1", "net2.input2", "net2.output1"],
-         "petab.PETAB_ENTITY_ID" => ["prey", "predator", "gamma",
+         "modelEntityId" => ["prey", "predator", "gamma",
                                      "alpha", "predator", "net2_output1"]))
 CSV.write(joinpath(@__DIR__, "..", "petab", "mapping_table.tsv"), mapping_table; delim = '\t')
 problem_yaml = Dict(

@@ -99,8 +99,8 @@ nn_ps_to_h5(nn_model, llh_grad.p_net1, joinpath(@__DIR__, "..", "grad_net1.hf5")
 
 # Write problem yaml
 mapping_table = DataFrame(
-    Dict("petab.MODEL_ENTITY_ID" => ["net1.input1", "net1.output1"],
-         "petab.PETAB_ENTITY_ID" => ["net1_input1", "gamma"]))
+    Dict("petabEntityId" => ["net1.input1", "net1.output1"],
+         "modelEntityId" => ["net1_input1", "gamma"]))
 CSV.write(joinpath(@__DIR__, "..", "petab", "mapping_table.tsv"), mapping_table; delim = '\t')
 problem_yaml = Dict(
     :format_version => 2,
