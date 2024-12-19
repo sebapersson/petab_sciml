@@ -1,24 +1,28 @@
 problems:
-  - measurement_files:
+  - model_files:
+      location: "lv.xml"
+      language: "sbml"
+    measurement_files:
       - "measurements.tsv"
     observable_files:
       - "observables.tsv"
-    sbml_files:
-      - "lv.xml"
     condition_files:
       - "conditions.tsv"
-    mapping_tables: "mapping_table.tsv"
-format_version: 1
+    mapping_files:
+      - "mapping_table.tsv"
+format_version: 2
 extensions:
   petab_sciml:
-    hybridization:
-      net2:
+    net2:
+      file: "net2.yaml"
+      hybridization:
         output: "observable"
         input: "ode"
-      net1:
+      parameters: "net2_ps.h5"
+    net1:
+      file: "net1.yaml"
+      hybridization:
         output: "pre_ode"
         input: "pre_ode"
-    net_files:
-      - "net1.yaml"
-      - "net2.yaml"
+      parameters: "net1_ps.h5"
 parameter_file: "parameters_ude.tsv"

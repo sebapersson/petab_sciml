@@ -31,5 +31,4 @@ x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 2000)
 
 # Write neural-net parameters to file
-ps_df = nn_ps_to_tidy(nn_model, sol2.u, :net1)
-CSV.write(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), ps_df, delim = '\t')
+nn_ps_to_h5(nn_model, sol2.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))

@@ -24,5 +24,4 @@ prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 10000)
 
 # Write neural-net parameters to file
-ps_df = nn_ps_to_tidy(nn_model, solopt.u, :net1)
-CSV.write(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), ps_df, delim = '\t')
+nn_ps_to_h5(nn_model, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))

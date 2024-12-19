@@ -31,7 +31,7 @@ sol1 = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 5000)
 x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 2000)
 # Write neural-net parameters to file
-ps1_df = nn_ps_to_tidy(nn_model1, sol2.u, :net1)
+nn_ps_to_h5(nn_model1, sol2.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
 
 ## Net2
 # The neural network should learn y, where 1.3 and y are the inputs. The network is trained
@@ -57,7 +57,4 @@ sol1 = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 5000)
 x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 2000)
 # Write neural-net parameters to file
-ps2_df = nn_ps_to_tidy(nn_model2, sol2.u, :net2)
-
-ps_df = vcat(ps1_df, ps2_df)
-CSV.write(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), ps_df, delim = '\t')
+nn_ps_to_h5(nn_model2, sol2.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hf5"))

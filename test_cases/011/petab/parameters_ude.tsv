@@ -1,5 +1,5 @@
 parameterId	parameterName	parameterScale	lowerBound	upperBound	nominalValue	estimate
 beta	beta	lin	0	15	0.9	1
 delta	delta	lin	0	15	1.8	1
-p_net1	net1	lin	-inf	inf	0.0	1
-p_net2	net2	lin	-inf	inf	0.0	1
+net1	net1	lin	-inf	inf	0.0	1
+net2	net2	lin	-inf	inf	0.0	1

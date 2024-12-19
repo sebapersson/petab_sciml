@@ -1,7 +1,7 @@
-netId	ioId	ioValue
-net1	input1	prey
-net1	input2	predator
-net1	output1	net1_output1
-net2	input1	alpha
-net2	input2	predator
-net2	output1	net2_output1
+petabEntityId	modelEntityId
+net1.input1	prey
+net1.input2	predator
+net1.output1	net1_output1
+net2.input1	alpha
+net2.input2	predator
+net2.output1	net2_output1

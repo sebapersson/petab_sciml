@@ -1,6 +1,6 @@
 nn_model = @compact(
     layer1 = Dense(10, 2),
-    drop = AlphaDropout(0.5)
+    drop = AlphaDropout(0.5f0)
 ) do x
     x1 = drop(x)
     out = layer1(x1)
@@ -13,9 +13,9 @@ dirsave = joinpath(@__DIR__, "..")
 for i in 1:3
     rng = StableRNG(i)
     ps, st = Lux.setup(rng, nn_model)
-    input = rand(rng, 10)
-    output = zeros(2)
-    for i in 1:50000
+    input = rand(rng, Float32, 10)
+    output = zeros(Float32, 2)
+    for _ in 1:50000
         _output, st = nn_model(input, ps, st)
         output += _output
     end

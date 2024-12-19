@@ -13,7 +13,7 @@ dirsave = joinpath(@__DIR__, "..")
 for i in 1:3
     rng = StableRNG(i)
     ps, st = Lux.setup(rng, nn_model)
-    input = rand(rng, 10, 1, 1)
+    input = rand(rng, Float32, 10, 1, 1)
     output = nn_model(input, ps, st)[1]
     save_ps(dirsave, i, nn_model, ps)
     save_io(dirsave, i, input[:, :, 1], input_order_jl, input_order_py, :input)

@@ -10,8 +10,8 @@ Random.seed!(123)
 
 # Given the "image" input the output should for the net be [0.8].
 rng = StableRNG(1)
-input_data1 = rand(rng, 10, 10, 3, 1)
-input_data2 = rand(rng, 10, 10, 3, 1)
+input_data1 = rand(rng, Float32, 10, 10, 3, 1)
+input_data2 = rand(rng, Float32, 10, 10, 3, 1)
 output_data1 = 0.8
 output_data2 = 1.0
 function loss(x, p)
@@ -28,16 +28,21 @@ prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.001), maxiters = 1000)
 
 # Write neural-net parameters to file
-ps_df = nn_ps_to_tidy(nn_model, solopt.u, :net1)
-CSV.write(joinpath(@__DIR__, "..", "petab", "parameters_nn.tsv"), ps_df, delim = '\t')
+nn_ps_to_h5(nn_model, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
 # Also save input data to a petab file
-order_jl, order_py = ["W", "H", "C"], ["C", "H", "W"]
-imap = zeros(Int64, length(order_jl))
-for i in eachindex(order_py)
-    imap[i] = findfirst(x -> x == order_py[i], order_jl)
+# Input 1
+input_array1 = _reshape_array(input_data1[:, :, :], map_input)
+input_array1 = permutedims(input_array1, reverse(1:ndims(input_array1)))
+path_save = joinpath(@__DIR__, "..", "petab", "input_data1.hf5")
+isfile(path_save) && rm(path_save)
+h5open(path_save, "w") do file
+    write(file, "input1", input_array1)
 end
-map = collect(1:length(order_py)) .=> imap
-input_df1 = _array_to_tidy(input_data1[:, :, :]; mapping = map)
-input_df2 = _array_to_tidy(input_data2[:, :, :]; mapping = map)
-CSV.write(joinpath(@__DIR__, "..", "petab", "input_data1.tsv"), input_df1, delim = '\t')
-CSV.write(joinpath(@__DIR__, "..", "petab", "input_data2.tsv"), input_df2, delim = '\t')
+# Input 2
+input_array2 = _reshape_array(input_data2[:, :, :], map_input)
+input_array2 = permutedims(input_array2, reverse(1:ndims(input_array2)))
+path_save = joinpath(@__DIR__, "..", "petab", "input_data2.hf5")
+isfile(path_save) && rm(path_save)
+h5open(path_save, "w") do file
+    write(file, "input1", input_array2)
+end

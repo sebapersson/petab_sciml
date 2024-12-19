@@ -1,3 +1,3 @@
-netId	ioId	ioValue
-net1	input1	input_data.tsv
-net1	output1	gamma
+petabEntityId	modelEntityId
+net1.input1	input_data.hf5
+net1.output1	gamma

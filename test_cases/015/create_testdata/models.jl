@@ -32,3 +32,11 @@ end
 u0 = [0.44249296, 4.6280594]
 p_mechanistic = (α = 1.3, δ = 1.8, β = 0.9, γ = 0.8) |> ComponentArray
 oprob = ODEProblem(lv15!, u0, (0.0, 10.0), p_mechanistic)
+
+# For mapping the input
+order_jl, order_py = ["W", "H", "C"], ["C", "H", "W"]
+imap = zeros(Int64, length(order_jl))
+for i in eachindex(order_py)
+    imap[i] = findfirst(x -> x == order_py[i], order_jl)
+end
+map_input = collect(1:length(order_py)) .=> imap

@@ -1,4 +1,4 @@
-netId	ioId	ioValue
-net1	input1	net1_input1
-net1	input2	net1_input2
-net1	output1	gamma
+petabEntityId	modelEntityId
+net1.input1	net1_input1
+net1.input2	net1_input2
+net1.output1	gamma
