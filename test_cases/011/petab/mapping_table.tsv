@@ -1,7 +1,7 @@
 petabEntityId	modelEntityId
-net1.input1	prey
-net1.input2	predator
-net1.output1	gamma
-net2.input1	prey
-net2.input2	predator
-net2.output1	alpha
+prey	net1.input1
+predator	net1.input2
+gamma	net1.output1
+prey	net2.input1
+predator	net2.input2
+alpha	net2.output1

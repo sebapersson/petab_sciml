@@ -1,7 +1,8 @@
 problems:
   - model_files:
-      location: "lv.xml"
-      language: "sbml"
+      lv_ude:
+        location: "lv.xml"
+        language: "sbml"
     measurement_files:
       - "measurements.tsv"
     observable_files:
