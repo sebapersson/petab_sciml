@@ -77,9 +77,8 @@ CSV.write(joinpath(@__DIR__, "..", "grad_mech.tsv"), df_mech, delim = '\t')
 nn_ps_to_h5(nn_model, llh_grad.p_net1, joinpath(@__DIR__, "..", "grad_net1.hf5"))
 
 # Write problem yaml
-mapping_table = DataFrame(
-    Dict("petabEntityId" => ["net1.input1", "net1.input2", "net1.output1"],
-         "modelEntityId" => ["input1", "alpha", "gamma"]))
+mapping_table = DataFrame(petabEntityId = ["input1", "alpha", "gamma"],
+                          modelEntityId = ["net1.input1", "net1.input2", "net1.output1"])
 CSV.write(joinpath(@__DIR__, "..", "petab", "mapping_table.tsv"), mapping_table; delim = '\t')
 problem_yaml = Dict(
     :format_version => 2,
@@ -89,8 +88,9 @@ problem_yaml = Dict(
         :measurement_files => ["measurements.tsv"],
         :observable_files => ["observables.tsv"],
         :model_files => Dict(
-            :language => "sbml",
-            :location => "lv.xml"),
+            :lv_ude => Dict(
+                :language => "sbml",
+                :location => "lv.xml")),
         :mapping_files => ["mapping_table.tsv"])],
     :extensions => Dict(
         :petab_sciml => Dict(
