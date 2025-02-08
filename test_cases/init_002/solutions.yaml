@@ -1,0 +1,4 @@
+ps_files:
+  net1: "net1_ps_ref.hf5"
+nsimulate: 1
+tol_ps: 0.001
