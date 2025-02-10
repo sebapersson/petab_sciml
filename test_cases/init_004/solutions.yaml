@@ -1,0 +1,11 @@
+test:
+  mean:
+    nsamples: 50000
+    ps_files:
+      net1: "net1_ps_mean_ref.hf5"
+    tol: 0.02
+  variance:
+    nsamples: 50000
+    ps_files:
+      net1: "net1_ps_var_ref.hf5"
+    tol: 0.02

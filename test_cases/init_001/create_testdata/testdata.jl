@@ -14,10 +14,12 @@ x.p_net1.layer1 .= 0.0
 
 ## Write test values
 # YAML problem file
-solutions = Dict(:tol_ps => 1e-3,
-                 :nsimulate => 1,
-                 :ps_files =>
-                 Dict(:net1 => "net1_ps_ref.hf5"))
+solutions = Dict(
+    :test => Dict(
+    :nominal => Dict(
+        :ps_files => Dict(
+            :net1 => "net1_ps_ref.hf5"),
+        :tol => 1e-3)))
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Parameter values
 nn_ps_to_h5(nn_model, x.p_net1, joinpath(@__DIR__, "..", "net1_ps_ref.hf5"))
