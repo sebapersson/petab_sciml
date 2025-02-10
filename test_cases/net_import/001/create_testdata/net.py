@@ -20,7 +20,7 @@ class Net(nn.Module):
         x = self.layer3(x)
         return x
 
-dir_save = os.path.join(os.getcwd(), 'test_cases', "net_001")
+dir_save = os.path.join(os.getcwd(), 'test_cases', 'net_import', "001")
 net = Net()
 make_yaml(net, dir_save)
 test_nn(net, dir_save, ["layer1", "layer2", "layer3"])

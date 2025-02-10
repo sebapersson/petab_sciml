@@ -19,7 +19,7 @@ class Net(nn.Module):
         return out
 
 # Create a pytorch module, convert it to PEtab SciML, then save it to disk.
-dir_save = os.path.join(os.getcwd(), 'test_cases', "net_039")
+dir_save = os.path.join(os.getcwd(), 'test_cases', 'net_import', "039")
 net = Net()
 make_yaml(net, dir_save)
 test_nn(net, dir_save, ["layer1", "layer2"])
