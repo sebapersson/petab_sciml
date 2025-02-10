@@ -33,7 +33,12 @@ for i in 1:nsamples
     for layerid in keys(xnet1[i])
         for parameter_id in keys(xnet1[i][layerid])
             _ps = xnet1[i][layerid][parameter_id]
-            @views xnet1[i][layerid][parameter_id] .= glorot_normal(rng, Float64, size(_ps)...; gain = 0.4)
+            if layerid == :layer1 && parameter_id == :bias
+                gain = 0.4
+            else
+                gain = 1.0
+            end
+            @views xnet1[i][layerid][parameter_id] .= kaiming_uniform(rng, Float64, size(_ps)...; gain = gain)
         end
     end
 end

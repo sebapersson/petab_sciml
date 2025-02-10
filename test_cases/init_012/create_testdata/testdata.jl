@@ -31,10 +31,10 @@ nsamples = 500000
 xnet1 = [deepcopy(x.p_net1) .* 0.0 for _ in 1:nsamples]
 for i in 1:nsamples
     for layerid in keys(xnet1[i])
-        for paramter_id in keys(xnet1[i][layerid])
-            _ps = xnet1[i][layerid][paramter_id]
+        for parameter_id in keys(xnet1[i][layerid])
+            _ps = xnet1[i][layerid][parameter_id]
             dist = Normal(1.0, 0.2)
-            @views xnet1[i][layerid][paramter_id] .= rand(rng, dist, size(_ps)...)
+            @views xnet1[i][layerid][parameter_id] .= rand(rng, dist, size(_ps)...)
         end
     end
 end

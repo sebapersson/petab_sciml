@@ -2,7 +2,7 @@
     Hard-coded likelihood and simulated values for test case 001
 =#
 
-using YAML, Statistics
+using YAML
 include(joinpath(@__DIR__, "models.jl"))
 include(joinpath(@__DIR__, "..", "..", "..", "src", "julia", "helper.jl"))
 Random.seed!(123)
@@ -31,9 +31,9 @@ nsamples = 500000
 xnet1 = [deepcopy(x.p_net1) .* 0.0 for _ in 1:nsamples]
 for i in 1:nsamples
     for layerid in keys(xnet1[i])
-        for paramter_id in keys(xnet1[i][layerid])
-            _ps = xnet1[i][layerid][paramter_id]
-            @views xnet1[i][layerid][paramter_id] .= glorot_normal(rng, Float64, size(_ps)...; gain = 1.0)
+        for parameter_id in keys(xnet1[i][layerid])
+            _ps = xnet1[i][layerid][parameter_id]
+            @views xnet1[i][layerid][parameter_id] .= glorot_normal(rng, Float64, size(_ps)...; gain = 1.0)
         end
     end
 end
