@@ -11,4 +11,5 @@ makedocs(;
          pages = [
              "Home" => "index.md",
              "Tutorial" => "tutorial.md",
-             "Format" => "format.md"],)
+             "Format" => "format.md",
+             "Network Layers and Activation Functions" => "net_activation.md"],)
