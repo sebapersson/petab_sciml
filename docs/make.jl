@@ -10,5 +10,5 @@ makedocs(;
                                    edit_link = "main"),
          pages = [
              "Home" => "index.md",
-             "Format" => "format.md",
-             "Tutorial" => "tutorial.md"],)
+             "Tutorial" => "tutorial.md",
+             "Format" => "format.md"],)
