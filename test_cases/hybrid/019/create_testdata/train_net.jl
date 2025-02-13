@@ -31,4 +31,4 @@ x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 2000)
 
 # Write neural-net parameters to file
-nn_ps_to_h5(nn_model, sol2.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
+nn_ps_to_h5(nn_model, sol2.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"))

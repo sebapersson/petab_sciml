@@ -9,7 +9,7 @@ Random.seed!(123)
 
 # Read neural net parameters, and assign to x, and then set test-value for layer 1
 x = deepcopy(p_ode)
-set_ps_net!(x.p_net1, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"), nn_model)
+set_ps_net!(x.p_net1, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"), nn_model)
 x.p_net1.layer1 .= 0.0
 
 ## Write test values
@@ -18,11 +18,11 @@ solutions = Dict(
     :test => Dict(
     :nominal => Dict(
         :ps_files => Dict(
-            :net1 => "net1_ps_ref.hf5"),
+            :net1 => "net1_ps_ref.hdf5"),
         :tol => 1e-3)))
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Parameter values
-nn_ps_to_h5(nn_model, x.p_net1, joinpath(@__DIR__, "..", "net1_ps_ref.hf5"))
+nn_ps_to_h5(nn_model, x.p_net1, joinpath(@__DIR__, "..", "net1_ps_ref.hdf5"))
 
 ## Write PEtabProblem files
 mapping_table = DataFrame(petabEntityId = ["prey", "predator", "gamma"],
@@ -44,7 +44,7 @@ problem_yaml = Dict(
         :petab_sciml => Dict(
             :net1 => Dict(
                 :file => "net1.yaml",
-                :parameters => "net1_ps.h5",
+                :parameters => "net1_ps.hdf5",
                 :hybridization => Dict(
                     :input => "ode",
                     :output => "ode")))))

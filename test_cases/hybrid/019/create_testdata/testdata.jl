@@ -37,7 +37,7 @@ x = ComponentArray((α = 1.3, δ = 1.8, β = 0.9, γ = 0.8))
 include(joinpath(@__DIR__, "..", "..", "..", "src", "julia", "helper.jl"))
 # Read neural net parameters, and assign to x
 pnet1 = deepcopy(pnn) |> ComponentArray
-set_ps_net!(pnet1, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"), nn_model)
+set_ps_net!(pnet1, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"), nn_model)
 
 ## Compute model values
 _f = (x) -> compute_nllh(x, oprob, Vern9(), measurements, pnet1; abstol = 1e-12, reltol = 1e-12)
@@ -90,7 +90,7 @@ problem_yaml = Dict(
         :petab_sciml => Dict(
             :net1 => Dict(
                 :file => "net1.yaml",
-                :parameters => "net1_ps.h5",
+                :parameters => "net1_ps.hdf5",
                 :hybridization => Dict(
                     :input => "ode",
                     :output => "observable")))))

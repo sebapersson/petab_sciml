@@ -21,4 +21,4 @@ optf = OptimizationFunction(loss, Optimization.AutoForwardDiff())
 prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 10000)
 
-nn_ps_to_h5(nn_model, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
+nn_ps_to_h5(nn_model, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"))

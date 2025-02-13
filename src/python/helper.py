@@ -19,7 +19,7 @@ def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):
         if not layer_names is None:
             for layer_name in layer_names:
                 layer = getattr(net, layer_name)
-                ps_h5 = h5py.File(os.path.join(dir_save, "net_ps_" + str(i) + ".h5"), "r")
+                ps_h5 = h5py.File(os.path.join(dir_save, "net_ps_" + str(i) + ".hdf5"), "r")
                 ps_weight = ps_h5[layer_name]["weight"][:]
                 with torch.no_grad():
                     layer.weight[:] = torch.from_numpy(ps_weight)
@@ -28,8 +28,8 @@ def test_nn(net, dir_save, layer_names, dropout=False, atol=1e-3):
                     with torch.no_grad():
                         layer.bias[:] = torch.from_numpy(ps_bias)
 
-        input_h5 = h5py.File(os.path.join(dir_save, "net_input_" + str(i) + ".h5"))
-        output_h5 = h5py.File(os.path.join(dir_save, "net_output_" + str(i) + ".h5"))
+        input_h5 = h5py.File(os.path.join(dir_save, "net_input_" + str(i) + ".hdf5"))
+        output_h5 = h5py.File(os.path.join(dir_save, "net_output_" + str(i) + ".hdf5"))
         input = torch.from_numpy(input_h5["input"][:])
         output_ref = torch.from_numpy(output_h5["output"][:])
         if dropout == False:    

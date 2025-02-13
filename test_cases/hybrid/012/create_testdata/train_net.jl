@@ -10,8 +10,8 @@ Random.seed!(123)
 
 ## Net1
 # Reuse the net from test case 001 (as it takes ages to train)
-cp(joinpath(@__DIR__, "..", "..", "001", "petab", "net1_ps.hf5"),
-            joinpath(@__DIR__, "..", "petab", "net1_ps.hf5");
+cp(joinpath(@__DIR__, "..", "..", "001", "petab", "net1_ps.hdf5"),
+            joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5");
             force = true)
 
 ## Net2
@@ -25,4 +25,4 @@ x0 = ComponentArray(pnn2) .* 0.1
 optf = OptimizationFunction(loss2, Optimization.AutoForwardDiff())
 prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 10000)
-nn_ps_to_h5(nn_model2, solopt.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hf5"))
+nn_ps_to_h5(nn_model2, solopt.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hdf5"))

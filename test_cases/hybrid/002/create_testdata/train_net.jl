@@ -54,4 +54,4 @@ sol1 = solve(prob, OptimizationOptimisers.Adam(0.001), maxiters = 10000)
 x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 8000)
 
-nn_ps_to_h5(nn_model, sol2.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
+nn_ps_to_h5(nn_model, sol2.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"))

@@ -9,7 +9,7 @@ Random.seed!(123)
 
 # Read neural net parameters, and assign to x, and then set test-value for layer 1
 x = deepcopy(p_ode)
-set_ps_net!(x.p_net1, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"), nn_model)
+set_ps_net!(x.p_net1, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"), nn_model)
 
 ## Write test values
 # YAML problem file
@@ -17,12 +17,12 @@ solutions = Dict(
     :test => Dict(
     :mean => Dict(
         :ps_files => Dict(
-            :net1 => "net1_ps_mean_ref.hf5"),
+            :net1 => "net1_ps_mean_ref.hdf5"),
         :tol => 2e-2,
         :nsamples => 50000),
     :variance => Dict(
         :ps_files => Dict(
-            :net1 => "net1_ps_var_ref.hf5"),
+            :net1 => "net1_ps_var_ref.hdf5"),
         :tol => 2e-2,
         :nsamples => 50000)))
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
@@ -40,8 +40,8 @@ for i in 1:nsamples
 end
 xnet1_mean = sum([x for x in xnet1]) ./ nsamples
 xnet1_var = sum([(x - xnet1_mean).^2 for x in xnet1]) ./ (nsamples - 1)
-nn_ps_to_h5(nn_model, xnet1_mean, joinpath(@__DIR__, "..", "net1_ps_mean_ref.hf5"))
-nn_ps_to_h5(nn_model, xnet1_var, joinpath(@__DIR__, "..", "net1_ps_var_ref.hf5"))
+nn_ps_to_h5(nn_model, xnet1_mean, joinpath(@__DIR__, "..", "net1_ps_mean_ref.hdf5"))
+nn_ps_to_h5(nn_model, xnet1_var, joinpath(@__DIR__, "..", "net1_ps_var_ref.hdf5"))
 
 ## Write PEtabProblem files
 mapping_table = DataFrame(petabEntityId = ["prey", "predator", "gamma"],
@@ -63,7 +63,7 @@ problem_yaml = Dict(
         :petab_sciml => Dict(
             :net1 => Dict(
                 :file => "net1.yaml",
-                :parameters => "net1_ps.h5",
+                :parameters => "net1_ps.hdf5",
                 :hybridization => Dict(
                     :input => "ode",
                     :output => "ode")))))

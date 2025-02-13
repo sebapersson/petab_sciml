@@ -28,12 +28,12 @@ prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.001), maxiters = 1000)
 
 # Write neural-net parameters to file
-nn_ps_to_h5(nn_model, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
+nn_ps_to_h5(nn_model, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"))
 # Also save input data to a petab file
 # Input 1
 input_array1 = _reshape_array(input_data1[:, :, :], map_input)
 input_array1 = permutedims(input_array1, reverse(1:ndims(input_array1)))
-path_save = joinpath(@__DIR__, "..", "petab", "input_data1.hf5")
+path_save = joinpath(@__DIR__, "..", "petab", "input_data1.hdf5")
 isfile(path_save) && rm(path_save)
 h5open(path_save, "w") do file
     write(file, "input1", input_array1)
@@ -41,7 +41,7 @@ end
 # Input 2
 input_array2 = _reshape_array(input_data2[:, :, :], map_input)
 input_array2 = permutedims(input_array2, reverse(1:ndims(input_array2)))
-path_save = joinpath(@__DIR__, "..", "petab", "input_data2.hf5")
+path_save = joinpath(@__DIR__, "..", "petab", "input_data2.hdf5")
 isfile(path_save) && rm(path_save)
 h5open(path_save, "w") do file
     write(file, "input1", input_array2)

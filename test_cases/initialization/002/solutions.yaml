@@ -1,5 +1,5 @@
 test:
   nominal:
     ps_files:
-      net1: "net1_ps_ref.hf5"
+      net1: "net1_ps_ref.hdf5"
     tol: 0.001

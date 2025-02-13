@@ -36,7 +36,7 @@ measurements = CSV.read(joinpath(@__DIR__, "..", "petab", "measurements.tsv"), D
 x = deepcopy(p_mechanistic) |> ComponentArray
 # Read neural net parameters, and assign to x
 pnet1 = deepcopy(p_ode.p_net1)
-set_ps_net!(pnet1, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"), nn_model)
+set_ps_net!(pnet1, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"), nn_model)
 
 ## Compute model values
 _f = (x) -> compute_nllh(x, oprob_nn, Vern9(), measurements, pnet1; abstol = 1e-12, reltol = 1e-12)
@@ -90,7 +90,7 @@ problem_yaml = Dict(
         :petab_sciml => Dict(
             :net1 => Dict(
                 :file => "net1.yaml",
-                :parameters => "net1_ps.h5",
+                :parameters => "net1_ps.hdf5",
                 :hybridization => Dict(
                     :input => "ode",
                     :output => "ode")))))

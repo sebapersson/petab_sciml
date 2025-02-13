@@ -10,8 +10,8 @@ Random.seed!(123)
 
 ## Net1
 # Reuse the net from test case 001 (as it takes ages to train)
-cp(joinpath(@__DIR__, "..", "..", "001", "petab", "net1_ps.hf5"),
-            joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
+cp(joinpath(@__DIR__, "..", "..", "001", "petab", "net1_ps.hdf5"),
+            joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"))
 
 ## Net2
 # Stage 1: the neural network should learn α*prey - β * prey * predator
@@ -36,4 +36,4 @@ prob = OptimizationProblem(optf, x0, Float64[])
 sol1 = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 2000)
 x0 .= sol1.u
 sol2 = solve(prob, Optimization.LBFGS(), maxiters = 2000)
-nn_ps_to_h5(nn_model2, sol2.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hf5"))
+nn_ps_to_h5(nn_model2, sol2.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hdf5"))

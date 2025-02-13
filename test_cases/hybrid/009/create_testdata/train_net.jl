@@ -22,7 +22,7 @@ optf = OptimizationFunction(loss1, Optimization.AutoForwardDiff())
 prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 10000)
 # Write neural-net parameters to file
-nn_ps_to_h5(nn_model1, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"))
+nn_ps_to_h5(nn_model1, solopt.u, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"))
 
 ## Net2
 input_data = [2.0, 2.0]
@@ -35,4 +35,4 @@ x0 = ComponentArray(pnn2) .* 0.1
 optf = OptimizationFunction(loss2, Optimization.AutoForwardDiff())
 prob = OptimizationProblem(optf, x0, Float64[])
 solopt = solve(prob, OptimizationOptimisers.Adam(0.01), maxiters = 10000)
-nn_ps_to_h5(nn_model2, solopt.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hf5"))
+nn_ps_to_h5(nn_model2, solopt.u, joinpath(@__DIR__, "..", "petab", "net2_ps.hdf5"))

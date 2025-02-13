@@ -44,7 +44,7 @@ x = ComponentArray(merge(xmech, (p_net1=pnn,)))
 # Read neural net parameters, and assign to x
 include(joinpath(@__DIR__, "..", "..", "..", "src", "julia", "helper.jl"))
 # Read neural net parameters, and assign to x
-set_ps_net!(x.p_net1, joinpath(@__DIR__, "..", "petab", "net1_ps.hf5"), nn_model)
+set_ps_net!(x.p_net1, joinpath(@__DIR__, "..", "petab", "net1_ps.hdf5"), nn_model)
 
 ## Compute model values
 _f = (x) -> compute_nllh(x, oprob, Vern9(), measurements; abstol = 1e-12, reltol = 1e-12)
@@ -72,7 +72,7 @@ solutions = Dict(:llh => llh,
                  :tol_simulations => 1e-3,
                  :grad_llh_files => Dict(
                     :mech => "grad_mech.tsv",
-                    :net1 => "grad_net1.hf5"),
+                    :net1 => "grad_net1.hdf5"),
                  :simulation_files => ["simulations.tsv"])
 YAML.write_file(joinpath(@__DIR__, "..", "solutions.yaml"), solutions)
 # Simulated values
@@ -84,7 +84,7 @@ CSV.write(joinpath(@__DIR__, "..", "simulations.tsv"), simulations_df, delim = '
 df_mech = DataFrame(parameterId = ["alpha", "delta", "beta"],
                     value = llh_grad[1:3])
 CSV.write(joinpath(@__DIR__, "..", "grad_mech.tsv"), df_mech, delim = '\t')
-nn_ps_to_h5(nn_model, llh_grad.p_net1, joinpath(@__DIR__, "..", "grad_net1.hf5"))
+nn_ps_to_h5(nn_model, llh_grad.p_net1, joinpath(@__DIR__, "..", "grad_net1.hdf5"))
 
 # Write problem yaml
 mapping_table = DataFrame(petabEntityId = ["net1_input1", "net1_input2", "gamma"],
@@ -106,7 +106,7 @@ problem_yaml = Dict(
         :petab_sciml => Dict(
             :net1 => Dict(
                 :file => "net1.yaml",
-                :parameters => "net1_ps.h5",
+                :parameters => "net1_ps.hdf5",
                 :hybridization => Dict(
                     :input => "pre_ode",
                     :output => "pre_ode")))))

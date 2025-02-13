@@ -8,14 +8,14 @@ using Catalyst: @unpack
 function write_yaml(dirsave, input_order_jl, input_order_py, output_order_jl, output_order_py; ps::Bool=true, dropout::Bool=false)::Nothing
     solutions = Dict(
         :net_file => "net.yaml",
-        :net_input => ["net_input_1.h5", "net_input_2.h5", "net_input_3.h5"],
-        :net_output => ["net_output_1.h5", "net_output_2.h5", "net_output_3.h5"],
+        :net_input => ["net_input_1.hdf5", "net_input_2.hdf5", "net_input_3.hdf5"],
+        :net_output => ["net_output_1.hdf5", "net_output_2.hdf5", "net_output_3.hdf5"],
         :input_order_jl => input_order_jl,
         :input_order_py => input_order_py,
         :output_order_jl => output_order_jl,
         :output_order_py => output_order_py)
     if ps
-        solutions[:net_ps] = ["net_ps_1.h5", "net_ps_2.h5", "net_ps_3.h5"]
+        solutions[:net_ps] = ["net_ps_1.hdf5", "net_ps_2.hdf5", "net_ps_3.hdf5"]
     end
     if dropout
         solutions[:dropout] = 40000
@@ -42,11 +42,11 @@ function save_io(dirsave, i::Integer, input, order_jl, order_py, iotype::Symbol)
     end
 
     if iotype == :input
-        h5open(joinpath(dirsave, "net_input_$i.h5"), "w") do file
+        h5open(joinpath(dirsave, "net_input_$i.hdf5"), "w") do file
             write(file, "input", xsave)
         end
     elseif iotype == :output
-        h5open(joinpath(dirsave, "net_output_$i.h5"), "w") do file
+        h5open(joinpath(dirsave, "net_output_$i.hdf5"), "w") do file
             write(file, "output", xsave)
         end
     end
@@ -54,7 +54,7 @@ function save_io(dirsave, i::Integer, input, order_jl, order_py, iotype::Symbol)
 end
 
 function save_ps(dirsave, i::Integer, nn_model, ps)::Nothing
-    nn_ps_to_h5(nn_model, ps, joinpath(dirsave, "net_ps_$i.h5"))
+    nn_ps_to_h5(nn_model, ps, joinpath(dirsave, "net_ps_$i.hdf5"))
     return nothing
 end
 

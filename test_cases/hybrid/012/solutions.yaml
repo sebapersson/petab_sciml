@@ -1,7 +1,7 @@
 grad_llh_files:
   mech: "grad_mech.tsv"
-  net2: "grad_net2.hf5"
-  net1: "grad_net1.hf5"
+  net2: "grad_net2.hdf5"
+  net1: "grad_net1.hdf5"
 simulation_files:
   - "simulations.tsv"
 llh: 32.77877975972366
