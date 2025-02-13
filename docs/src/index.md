@@ -1,6 +1,6 @@
 # PEtab SciML Extension
 
-The PEtab SciML extension expands the PEtab parameter estimation standard to accommodate hybrid models that combine data-driven neural network models with mechanistic Ordinary Differential Equation (ODE) models. This enables a reproducible format for specifying and ultimately fitting hybrid models to time-lapse data. This repository contains both the format specification and a Python library for exporting neural network models to a standard YAML format, which can be imported across multiple programming languages.
+The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/latest/) standard for parameter estimation problems to support hybrid models that combine data-driven neural network models with a mechanistic Ordinary Differential Equation (ODE) model. This enables a reproducible format for specifying and ultimately fitting hybrid models to time-lapse data. This repository contains both the format specification and a Python library for exporting neural network models to a standard YAML format, which can be imported across multiple programming languages.
 
 ## Major Highlights
 
@@ -9,12 +9,12 @@ The PEtab SciML extension expands the PEtab parameter estimation standard to acc
   * Incorporating neural network model(s) in the observable formula which describes the mapping between simulation output and measurement data.
   * Incorporating neural network model(s) to set constant model parameter values prior to simulation, allowing for example, available metadata to be used to set parameter values.
 * Format which supports many neural network architectures, including most standard layers and activation functions available in packages such as PyTorch.
-* Format supported in tools across several programming languages. In particular, both PEtab.jl in Julia and AMICI in Python (Jax) can import problems in the PEtab SciML format.
-* An extensive test suite ensures the correctness of tools supporting the format.
+* Format supported in tools across several programming languages. In particular, both [PEtab.jl](https://github.com/sebapersson/PEtab.jl) in Julia and AMICI in Python (Jax) can import problems in the PEtab SciML format.
+* An extensive test suite that ensures the correctness of tools supporting the format.
 
 ## Installation
 
-TODO: Dilan please help here.
+TODO: Dilan please help here. Will need to setup with pip?
 
 ## Getting help
 
