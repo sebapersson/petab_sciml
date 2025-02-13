@@ -7,9 +7,9 @@ export PYTHONPATH="$pwd:$PYTHONPATH"
 for ((i = 1 ; i < 52 ; i++)); do
     echo "Test case $i"
     if [ $i -lt 10 ]; then
-        path="./test_cases/net_00$i/create_testdata/net.py"
+        path="./test_cases/net_import/00$i/create_testdata/net.py"
     else
-        path="./test_cases/net_0$i/create_testdata/net.py"
+        path="./test_cases/net_import/0$i/create_testdata/net.py"
     fi
     python $path
 done
