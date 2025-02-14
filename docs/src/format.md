@@ -111,7 +111,7 @@ The mapping table describes which PEtab problem variables a neural network’s i
 
 - **petabEntityId [STRING]**: A valid PEtab identifier not defined elsewhere in the PEtab problem. It can be referenced in the condition, measurement, parameter, and observable tables or be a file, but not in the model itself. For neural network outputs, the PEtab identifier must be assigned in the condition table, whereas for inputs, this is not required (see examples below).
 
-- **modelEntityId [STRING]**: Describes the neural network entity corresponding to the `petabEntityId`. Must follow the format `netId.input{n}` or `netId.output{n}`, where `n` is the specific input or output index.
+- **modelEntityId [STRING]**: Describes the neural network entity corresponding to the `petabEntityId`. Must follow the format `{netId}.input{n}` or `{netId}.output{n}`, where `n` is the index of the respective input or output and `netId` is the network identifier that was used in the Problem YAML file.
 
 ### Network with Scalar Inputs
 
