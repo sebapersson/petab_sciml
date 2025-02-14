@@ -100,7 +100,7 @@ When network input is provided as an array via an HDF5 file (see the mapping tab
 
 ## Mapping Table
 
-The mapping table describes whcih PEtab problem variables a neural network’s inputs and outputs map. Each neural network input and output must be mapped in the mapping table.
+The mapping table describes which PEtab problem variables a neural network’s inputs and outputs map. Each neural network input and output must be mapped in the mapping table.
 
 | **petabEntityId** | **modelEntityId** |
 |-------------------|-------------------|
