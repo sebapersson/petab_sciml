@@ -9,7 +9,7 @@ The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/la
   * Incorporating neural network model(s) in the observable formula which describes the mapping between simulation output and measurement data.
   * Incorporating neural network model(s) to set constant model parameter values prior to simulation, allowing for example, available metadata to be used to set parameter values.
 * support for many neural network architectures, including most standard layers and activation functions available in packages such as PyTorch.
-* Format supported in tools across several programming languages. In particular, both [PEtab.jl](https://github.com/sebapersson/PEtab.jl) in Julia and AMICI in Python (Jax) can import problems in the PEtab SciML format.
+* implementations in tools across two programming languages. In particular, both [PEtab.jl](https://github.com/sebapersson/PEtab.jl) in Julia and AMICI in Python (Jax) can import problems in the PEtab SciML format.
 * An extensive test suite that ensures the correctness of tools supporting the format.
 
 ## Installation
