@@ -17,7 +17,7 @@ All other PEtab files remain unchanged. This page explains the format and option
 
 The main goal of the PEtab SciML extension is to enable hybrid models that combine data-driven and mechanistic components. There are three types of hybrid model considered, each specified differently:
 
-1. **Data-driven models in the ODE model’s right-hand side (RHS):** In this scenario, the SBML file is modified during import by either replacing a derivative or assigning a parameter to a neural network output. In both cases, the neural network input and output variables (as defined in the mapping table) must be assigned in the condition table using the `setNetRate` and/or `setNetAssignment` operator types.
+1. **Data-driven models in the ODE model’s right-hand side (RHS):** In this scenario, the SBML file is modified during import by either replacing a derivative or setting a parameter value to a neural network output. In both cases, the neural network input and output variables (as defined in the mapping table) must be assigned in the condition table using the `setNetRate` and/or `setNetAssignment` operator types.
 
 2. **Data-driven models in the observable function:** In this scenario, the neural network output variable (as defined in the mapping table) is directly embedded in the observable formula. Meanwhile, the input variables (also defined in the mapping table) are assigned in the condition table using the `setNetAssignment` operator type.
 
