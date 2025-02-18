@@ -25,7 +25,7 @@ The main goal of the PEtab SciML extension is to enable hybrid models that combi
 
 ## Neural Network Model Format
 
-**TODO:** Dilan, I will need some help from you here, link the scheme?
+The [schema](https://github.com/sebapersson/petab_sciml/blob/main/src/python/petab_sciml/standard/schema.yaml) is provided in the YAML-formatted JSON schema standard, which enables easy validation with various third-party tools.
 
 Neural network models are provided as separate YAML files, and each tool supporting the extension is responsible for importing this file into a suitable format. A neural network YAML file has two main sections:
 
