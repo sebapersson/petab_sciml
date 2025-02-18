@@ -1,6 +1,6 @@
 # Format Specification
 
-A PEtab SciML problem extends the PEtab standard version 2 to accommodate hybrid models SciML problems that combine data-driven (neural net) and mechanistic components. The extension introduces one new PEtab file type:
+A PEtab SciML problem extends the PEtab standard version 2 to accommodate hybrid models (SciML problems) that combine data-driven (neural net) and mechanistic components. The extension introduces one new PEtab file type:
 
 1. **Neural Net File(s)**: YAML file(s) describing neural net model(s).
 
