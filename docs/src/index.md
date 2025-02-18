@@ -1,6 +1,6 @@
 # PEtab SciML Extension
 
-The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/latest/) standard for parameter estimation problems to support hybrid models that combine data-driven neural network models with a mechanistic Ordinary Differential Equation (ODE) model. This enables a reproducible format for specifying and ultimately fitting hybrid models to time-lapse data. This repository contains both the format specification and a Python library for exporting neural network models to a standard YAML format, which can be imported across multiple programming languages.
+The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/latest/) standard for parameter estimation problems to support hybrid models that combine data-driven neural network models with a mechanistic Ordinary Differential Equation (ODE) model. This enables a reproducible format for specifying and ultimately fitting hybrid models to time-series data. This repository contains both the format specification and a Python library for exporting neural network models to a standard YAML format, which can be imported across multiple programming languages.
 
 ## Major Highlights
 
