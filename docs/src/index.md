@@ -4,7 +4,7 @@ The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/la
 
 ## Major Highlights
 
-* A format which supports three approaches for combining mechanistic and neural network models:
+* A file format that supports three approaches for combining mechanistic and neural network models:
   * Incorporating neural network model(s) data-driven model in the ODE model right-hand side.
   * Incorporating neural network model(s) in the observable formula which describes the mapping between simulation output and measurement data.
   * Incorporating neural network model(s) to set constant model parameter values prior to simulation, allowing for example, available metadata to be used to set parameter values.
