@@ -12,4 +12,5 @@ makedocs(;
              "Home" => "index.md",
              "Tutorial" => "tutorial.md",
              "Format" => "format.md",
-             "Supported Layers and Activation Functions" => "net_activation.md"],)
+             "Supported Layers and Activation Functions" => "net_activation.md",
+             "Test Suite" => "test_info.md"],)
