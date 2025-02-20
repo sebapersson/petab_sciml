@@ -15,9 +15,10 @@ The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/la
 ## Installation
 
 Currently, an installation of git and a recent version of Python 3 is required. As usual, a Python virtual environment is encouraged.
-'''bash
+
+```bash
 pip install git+https://github.com/sebapersson/petab_sciml#subdirectory=src/python&egg=petab_sciml
-'''
+```
 
 ## Getting help
 
