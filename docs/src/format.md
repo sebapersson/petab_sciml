@@ -2,14 +2,14 @@
 
 A PEtab SciML problem extends the PEtab standard version 2 to accommodate hybrid models (SciML problems) that combine data-driven (neural net) and mechanistic components. The extension introduces one new PEtab file type:
 
-1. **Neural Net File(s)**: YAML file(s) describing neural net model(s).
+1. **Neural Net File(s)**: Optional YAML file(s) describing neural net model(s).
 
 It further extends the following standard PEtab files:
 
 1. **Mapping Table**: Used to describe how neural network inputs and outputs map to PEtab quantities.
 2. **Parameters Table**: Used to describe nominal values and potential priors for initializing network parameters.
 3. **Condition Table**: Used to assign neural network outputs and inputs.
-4. **Problem YAML File**: Includes a new SciML field.
+4. **Problem YAML File**: Includes a new SciML field for neural network models and potential arrays.
 
 All other PEtab files remain unchanged. This page explains the format and options for each file that is added or modified by the PEtab SciML extension.
 
@@ -19,15 +19,13 @@ The main goal of the PEtab SciML extension is to enable hybrid models that combi
 
 1. **Data-driven models in the ODE model’s right-hand side (RHS):** In this scenario, the SBML file is modified during import by either replacing a derivative or setting a parameter value to a neural network output. In both cases, the neural network input and output variables (as defined in the mapping table) must be assigned in the condition table using the `setNetRate` and/or `setNetAssignment` operator types.
 
-2. **Data-driven models in the observable function:** In this scenario, the neural network output variable (as defined in the mapping table) is directly embedded in the observable formula. Meanwhile, the input variables (also defined in the mapping table) are assigned in the condition table using the `setNetAssignment` operator type.
+2. **Data-driven models in the observable function:** In this scenario, the neural network output variable (as defined in the mapping table) is directly inserted in the observable formula. Meanwhile, the input variables (also defined in the mapping table) are assigned in the condition table using the `setNetAssignment` operator type.
 
 3. **Data-driven models before the ODE model:** In this scenario, the data-driven model sets constant parameters or initial values in the ODE model prior to simulation. The input variable (as defined in the mapping table) can be assigned in the parameter or condition table as a standard constant PEtab variable, and the output variables (as defined in the mapping table) are assigned via the condition table.
 
 ## Neural Network Model Format
 
-The neural network model format is flexible, meaning that data-driven models can be provided in any format supported by tools supporting the standard (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library offers a YAML file format (see below) for neural network models, which can be imported into a suitable library by any tool that supports the standard.
-
-The reason for this flexibility in neural network model format is because even though the YAML format can accommodate many architectures, some may still be difficult to represent. Still, we recommend using the YAML format whenever possible to facilitate model exchange across different software.
+The neural network model format is flexible, meaning that data-driven models can be provided in any format supported by tools compatible with the PEtab SciML format (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library offers a YAML file format (see below) for neural network models, which can be imported into tools across programming languages. The reason for this flexibility in format is that, although the YAML format can accommodate many architectures, some may still be difficult to represent. Still, when possible, we recommend using the YAML format to facilitate model exchange across different software.
 
 Regardless of the model format, to be compatible with the PEtab SciML format a neural network model must include two main parts:
 
@@ -91,7 +89,7 @@ A complete list of supported and tested layers and activation functions can be f
 
 ### [Neural Network Parameters](@id hdf5_ps_structure)
 
-All parameters for a neural network model are stored in an HDF5 file, with the file path specified in the problem [YAML file](@ref YAML_file). In this file, each layer’s parameters are in a group with identifier `f.layerId`, where `layerId` is the layer’s unique identifier. More formally, an HDF5 parameter file might have the following structure for an arbitrary number of layers:
+All parameters for a neural network model are stored in an HDF5 file, with the file path specified in the problem [YAML file](@ref YAML_file). In this file, each layer’s parameters are in a group with identifier `f.layerId`, where `layerId` is the layer’s unique identifier. More formally, an HDF5 parameter file should have the following structure for an arbitrary number of layers:
 
 ```
 parameters.hdf5
@@ -103,12 +101,12 @@ parameters.hdf5
     └── arrayId{2}
 ```
 
-Here, `arrayId` depends on how parameters are named for each layer. For example, a PyTorch `linear` layer typically has arrays named `weight` and (optionally) `bias`. Although these names are common in many layers, the actual `arrayId` depends on the layer type and the neural network library.
+Here, `arrayId` depends on the naming convention for parameters in each layer. For example, a PyTorch `linear` layer typically has arrays named `weight` and (optionally) `bias`. While these names are common in many layers, the actual `arrayId` depends on the layer type and the specific neural network library.
 
-Because parameters are stored in HDF5, they are saved as arrays. The indexing convention depends on the model library:
+Because parameters are stored in HDF5, they are saved as arrays. The indexing convention and naming therefore depends on the model library:
 
-- For neural network models in the PEtab SciML format, indexing follows PyTorch conventions, which store parameters in row-major order. Usually, users do not need to handle these details directly, as PEtab SciML tools manage them automatically. This also means that `arrayId` follows PyTorch naming convention.
-- For neural networks provided by another library, the indexing and ordering follow that library’s conventions.
+- For neural network models in the PEtab SciML YAML format, indexing follows PyTorch conventions. Usually, users do not need to handle these details directly, as PEtab SciML tools manage them automatically. This also means that `arrayId` follows PyTorch naming convention.
+- For neural networks provided by another library, the indexing and `arrayId` naming follow that library’s conventions.
 
 ### [Neural Network Input](@id hdf5_input_structure)
 
@@ -126,13 +124,13 @@ As with [parameters](@ref hdf5_ps_structure), the indexing depends on the neural
 - For neural networks provided by another library, the indexing and ordering follow the conventions of that library.
 
 !!! tip "For developers: Respect memory order"
-    Tools supporting the SciML extension should, for computational efficiency, reorder input data and potential layer parameter arrays to match the memory ordering of the target language. For example, PEtab.jl converts input data to column-major order, as used in Julia.
+    Tools supporting the SciML extension should, for computational efficiency, reorder input data and potential layer parameter arrays to match the memory ordering of the target language. For example, PEtab.jl converts input data to column-major order, with Julia indexing.
 
 TODO: We will fix condition specific input in the YAML file later.
 
 ## Mapping Table
 
-To avoid confusion about what `netId` might refer to (e.g., parameters, inputs, etc...), `netId` is not considered a valid PEtab identifier. Consequently, every neural network input, parameter, and output must be explicitly mapped in the mapping table to a PEtab variable. In the context of the PEtab SciML extension, the relevant mapping table columns are:
+To avoid confusion regarding what a neural network ID (`netId`) refers to (e.g., parameters, inputs, etc.), `netId` is not considered a valid PEtab identifier. Consequently, every neural network input, parameter, and output must be explicitly mapped in the mapping table to a PEtab variable. In the context of the PEtab SciML extension, the relevant mapping table columns are:
 
 - **petabEntityId [STRING]**: A valid PEtab identifier that is not defined elsewhere in the PEtab problem. This identifier can be referenced in the condition, measurement, parameter, and observable tables, but not within the model itself. For neural network outputs, the PEtab identifier must be assigned in the condition table; for inputs, this is not required (see examples below).
 - **modelEntityId [STRING]**: Describes the neural network entity corresponding to the `petabEntityId`. This must specify a parameter set (e.g. `netId.parameters`), an input (e.g. `netId.input[{n}]`), or an output (`netId.output[{n}]`), where `n` is the specific input or output index.
@@ -161,19 +159,19 @@ Sometimes, such as with image data, a neural network requires array input. In th
 
 Where `net1_input_file` has been specified in the problem [YAML file](@ref YAML_file).
 
-When multiple simulation conditions each require a different neural network array input, the mapping table should map to a PEtab variable (for example, `net1\_input`):
+When multiple simulation conditions each require a different neural network array input, the mapping table should map the input to a PEtab variable (for example, `net1\_input`):
 
 | **petabEntityId** | **modelEntityId** |
 |-------------------|-------------------|
 | net1\_input        | net1.input        |
 
-This variable is then assigned to specific input file variables (e.g. `net1\_input_cond1` and `net1\_input_cond2`) via the condition table using the `setValue` operator type. For a full example of a valid PEtab problem with array inputs, see [ADD].
+This variable (here `net1_input`) is then assigned to specific input file variables (e.g. `net1\_input_cond1` and `net1\_input_cond2`) via the condition table using the `setValue` operator type. For a full example of a valid PEtab problem with array inputs, see [ADD].
 
 TODO: Will fix an input format later.
 
 ### Network with Multiple Input Arguments
 
-Sometimes a neural network model’s forward function has multiple input arguments. WHen the `netId.input[{n}]` notation is used in the mapping table it is assumed that there is only one input argument. Therefore, when there are multiple input arguments, the `netId.inputArg{n}` format should be used. For example, if there are two input arguments, each taking a scalar value, a valid mapping table would be:
+Sometimes a neural network model’s forward function has multiple input arguments. When the `netId.input[{n}]` notation is used in the mapping table it is assumed that there is only one input argument. Therefore, when there are multiple input arguments, the `netId.inputArg{n}` notation should be used. For example, if there are two input arguments, each taking a scalar value, a valid mapping table would be:
 
 | **petabEntityId** | **modelEntityId**    |
 |-------------------|----------------------|
@@ -188,7 +186,7 @@ If the neural network output appears in the observable formula, the PEtab entity
 |-----------------|-----------------|
 | net1\_output1    | net1.output[1]    |
 
-A valid observable table would be:
+A valid entry in the observable table would be:
 
 | **observableId** | **observableFormula** |
 |----------------|----------------------|
@@ -198,7 +196,7 @@ As usual, the `observableFormula` can be any valid PEtab equation, so `net1_outp
 
 ### Network Scalar Output
 
-If the output does not appear in the observable, the output variable should still be defined in the mapping table:
+If the output does not appear in the observable formula, the output variable should still be defined in the mapping table:
 
 | **petabEntityId** | **modelEntityId**  |
 |-----------------|-----------------|
@@ -208,7 +206,7 @@ The output parameter (`net1_output1`) is then assigned in the condition table (s
 
 ### [Network Parameter Values](@id mapping_ps)
 
-Since the `netId` is not a valid PEtab identifier, the PEtab ID representing the parameters for a neural network model must also be assigned in the mapping table. For example, if the network is called `net1`, a valid mapping table entry would be:
+The PEtab ID representing the parameters for a neural network model must also be assigned in the mapping table. For example, if the network is called `net1`, a valid mapping table entry would be:
 
 | **petabEntityId** | **modelEntityId**   |
 |-------------------|---------------------|
@@ -231,7 +229,7 @@ Although a neural network can, in principle, accept both array and scalar inputs
 
 ## Condition Table
 
-In the PEtab SciML extension, the condition table is extended to specify how neural network outputs (and, if necessary, inputs) are assigned. Two new `operatorType` values are introduced to support this functionality. Following the PEtab format for differentiable/algebraic targets, these `operatorType` values mean:
+In the PEtab SciML extension, the condition table is extended to specify how neural network outputs and, if necessary, inputs are assigned. Two new `operatorType` values are introduced to support this functionality. Similar to the the PEtab format for differentiable/algebraic targets, these `operatorType` values mean:
 
 1. **setNetRate**: Assigns the rate of a species to a neural network output. Here, `targetValue` must be a neural network output and `targetId` must be a model specie.
 2. **setNetAssignment**: Assigns the input or output of a neural network in the ODE right-hand side (RHS) or the input in the observable formula.
@@ -239,7 +237,7 @@ In the PEtab SciML extension, the condition table is extended to specify how neu
    - Output Case: `targetId` is a non-estimated ODE model parameter, and `targetValue` is a neural network output. This is used to assign a neural network output in the ODE model RHS.
 
 !!! warn "Model structure altering conditions"
-    IWhen `setNetRate` or `setNetAssignment` are used during model import the generated model structure or observable formula is altered, basically a neural-network is inserted into the generated functions. Therefore, as unique model structures per condition are not supported in most PEtab tools, the same `setNetAssignment` or `setNetRate` assignment must be set per condition.
+    When `setNetRate` or `setNetAssignment` are used, during model import the generated model structure or observable formula is altered, basically a neural-network is inserted into the generated functions. Therefore, as unique model structures per condition are not supported in most PEtab tools, the same `setNetAssignment` or `setNetRate` assignment must be set per condition.
 
 ### Assigning Neural Network Output
 
@@ -297,7 +295,7 @@ The parameter table follows the same format as in PEtab version 2, with a subset
 
 ### Detailed Field Description
 
-- **parameterId [String]**: Identifies the neural network or a specific layer/parameter array. The target of the `parameterId` must be assigned via the [mapping table](@ref mapping_ps). When parsing, more specific levels (e.g., `netId.layerId`) take precedence for nominal values, priors, etc.
+- **parameterId [String]**: Identifies the neural network or a specific layer/parameter array. The target of the `parameterId` must be assigned via the [mapping table](@ref mapping_ps). When parsing, deeper nested levels (e.g., `netId.layerId`) have precedence for nominal values, priors, etc.
 - **nominalValue [String \| NUMERIC]**: Specifies neural network nominal values. This can be:
   - A PEtab variable that via the problem [YAML file](@ref YAML_file) maps to an HDF5 file with the required [structure](@ref hdf5_ps_structure). If no file exists at the given path when the problem is imported and the parameters are set to be estimated, a file is created with randomly sampled values.
   - A numeric value applied to all parameters under `parameterId`.
@@ -352,7 +350,7 @@ extensions:
         language: hdf5        
 ```
 
-Here, `netId1` and `netId2` are the IDs of the neural network models, and `net1_input` and `net1_ps` corresponding to array files that can be used in the PEtab tables. In this case, `net1_input` could be used in the mapping table for `netId1`’s input, while `netId1_ps` could serve as the `nominalValue` in the parameter table.
+Here, `netId1` and `netId2` are the IDs of the neural network models, and `net1_input` and `net1_ps` corresponding to array files that can be used in the PEtab tables. In this case, `net1_input` would be used in the mapping table for `netId1`’s input, while `netId1_ps` would be the `nominalValue` in the parameter table.
 
 If the neural network is provided in another format—typically one specific to a certain implementation—the neural network library should be provided to inform users which library is used. For example, when using Lux.jl in Julia, a valid file would be:
 
@@ -365,7 +363,7 @@ extensions:
       library: Lux.jl
 ```
 
-It is then up to the specific implementation to provide the neural network model during import.
+It is then up to the specific implementation to provide the neural network model during import of the PEtab problem.
 
 Any number of neural networks can be specified. For example, for a model with a single neural network with ID `net1`, a valid YAML file would be:
 
