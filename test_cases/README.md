@@ -29,6 +29,4 @@ For each case, the following things are tested:
 
 ## Initialization tests
 
-These tests verify that nominal parameter values are read correctly and that `initializationPriorType` is correctly implemented. N.B.: these tests include cases where values or priors are specified for specific layers (e.g., via `netId.layerId` in the parameters table) or parameter arrays (e.g., `netId.layerId.bias`) of a neural net.
-
-For the test cases, either the nominal values are checked, or—when testing start guesses that are randomly sampled—the mean and variance of many samples are tested.
+These tests ensure that nominal parameter values are read correctly and that `initializationPriorType` is properly implemented. For the test cases, either the nominal values are directly verified, or, when testing start guesses that are randomly sampled, the mean and variance of multiple samples are evaluated.
