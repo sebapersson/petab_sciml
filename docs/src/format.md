@@ -9,7 +9,7 @@ It further extends the following standard PEtab files:
 1. **Mapping Table**: Used to describe how neural network inputs and outputs map to PEtab quantities.
 2. **Parameters Table**: Used to describe nominal values and potential priors for initializing network parameters.
 3. **Condition Table**: Used to assign neural network outputs and inputs.
-4. **Problem YAML File**: Includes a new SciML field for neural network models and potential arrays.
+4. **Problem YAML File**: Includes a new SciML field for neural network models and (optionally) array or tensor formatted data.
 
 All other PEtab files remain unchanged. This page explains the format and options for each file that is added or modified by the PEtab SciML extension.
 
