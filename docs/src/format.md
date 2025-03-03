@@ -21,7 +21,7 @@ The main goal of the PEtab SciML extension is to enable hybrid models that combi
 
 2. **Data-driven models in the observable function:** In this scenario, the neural network output variable (as defined in the mapping table) is directly inserted in the observable formula. Meanwhile, the input variables (also defined in the mapping table) are assigned in the condition table using the `setNetAssignment` operator type.
 
-3. **Data-driven models before the ODE model:** In this scenario, the data-driven model sets constant parameters or initial values in the ODE model prior to simulation. The input variable (as defined in the mapping table) can be assigned in the parameter or condition table as a standard constant PEtab variable, and the output variables (as defined in the mapping table) are assigned via the condition table.
+3. **Data-driven models to parametrize ODEs:** In this scenario, the data-driven model sets constant parameters or initial values in the ODE model prior to simulation. The input variable (as defined in the mapping table) can be assigned in the parameter or condition table as a standard constant PEtab variable, and the output variables (as defined in the mapping table) are assigned via the condition table.
 
 ## Neural Network Model Format
 
