@@ -23,7 +23,7 @@ The extension supports three hybrid model types, and a valid PEtab SciML problem
 2. **Neural network models in the observable function:** In this scenario, the neural network output variable (as defined in the mapping table) is directly inserted in the observable formula.
 3. **Neural network models to parametrize ODEs:** In this scenario, the neural network model sets constant parameters or initial values in the ODE model prior to simulation.
 
-As mentioned, one or any combination of the hybridization types is allowed. Aside from ensuring that neural networks do not conflict (for example, by having the same target), no special considerations are required to insert multiple networks into a problem, each additional network is added just as in the single-network case.
+As mentioned, one or any combination of the hybridization types is allowed. Aside from ensuring that neural networks do not conflict (for example, by having the same target), no special considerations are required to insert multiple networks into a problem. Each additional network is added just as in the single-network case.
 
 ## [Neural Network Model Format](@id net_format)
 
@@ -32,7 +32,7 @@ The neural network model format is flexible, meaning that models can be provided
 Regardless of the model format, to be compatible with the other files in a PEtab SciML problem a neural network model must consist of two parts:
 
 - **layers**: A constructor that defines the network layers, each with a unique identifier.
-- **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns a single array as output. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is considered as argument `n`.
+- **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns a single array as output. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is considered as argument `n`. Importantly, aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**). This requirement applies to all components that involve estimated parameters.
 
 ### [YAML Network file format](@id YAML_net_format)
 
@@ -137,7 +137,7 @@ TODO: We will fix condition specific input in the YAML file later.
 
 ## [Mapping Table](@id mapping_table)
 
-Each neural network is assigned an Id in the PEtab SciML extension section of the PEtab problem [YAML](@ref YAML_file) file. The neural network Id is not a valid PEtab identifier, to avoid confusion about what a neural network Id refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output must be explicitly imported into the PEtab problem via the mapping table. Repeating parts of the PEtab standard, the key columns in the mapping table are:
+Each neural network is assigned an Id in the PEtab SciML extension section of the PEtab problem [YAML](@ref YAML_file) file. To avoid confusion about what a neural network Id refers to (e.g., parameters, inputs, outputs), a neural network Id is not a valid PEtab identifier. Consequently, every neural network input, parameter, and output must be explicitly imported into the PEtab problem via the mapping table. Repeating parts of the PEtab standard, the key columns in the mapping table are:
 
 - **petabEntityId** [STRING, required]: A valid PEtab identifier is one that is not defined elsewhere in the PEtab problem. It can be referenced in the condition, hybridization, measurement, parameter, observable tables, and in the PEtab problem YAML file (if the variable refers to an array file), but not within the mechanistic model itself.
 - **modelEntityId** [STRING, required]: The neural network component that is mapped to the `petabEntityId`. For a neural network with Id `netId`, the valid identifiers are:
@@ -204,11 +204,11 @@ If the output does not appear in the observable formula, the output variable sho
 |-----------------|-----------------|
 | net1\_output1    | net1.output[1]    |
 
-The output value (`net1_output1`) is then used in the condition and/or hybridization table.
+The output value (`net1_output1`) is then used in the condition or hybridization table.
 
 ## [Hybridization Table](@id hybrid_table)
 
-The PEtab SciML extension introduces a new hybridization table for assigning neural network inputs and outputs. Assignments made in this table apply to all conditions, and together with the condition table, it specifies where a neural network is inserted in a PEtab SciML problem. The hybridization table has the following columns:
+The PEtab SciML extension introduces a new hybridization table for assigning neural network inputs and outputs. Assignments made in this table apply to all experimental conditions, and together with the condition table, it specifies where a neural network is inserted in a PEtab SciML problem. The hybridization table has the following columns:
 
 | **targetId**                | **operationType** | **targetValue**     |
 |-------------------------|---------------|-----------------|
@@ -223,7 +223,7 @@ The PEtab SciML extension introduces a new hybridization table for assigning neu
   The identifier of the non-estimated entity that will be modified. Restrictions vary depending on the `operationType` and the model type. Targets can be one of the following:
   - **Differential Targets**: Entities defined by a time derivative (e.g., targets of SBML rate rules or species that change by participating in reactions).
   - **Algebraic Targets**: Entities defined by an algebraic assignment (i.e., they are not associated with a time derivative and are generally not constant). In the context of a neural network, if the neural network appears in the observable formula or ODE RHS, its inputs are considered algebraic targets. If a neural network is exclusively of the 3rd hybridization type (**Neural network models to parametrize ODEs**), its inputs are considered to be a constant target.
-  - **Constant Targets**: Entities defined by a constant value but may be subject to event assignments (e.g., SBML model parameters that are not targets of rate or assignment rules). In the SciML standard, as potential input arrays files are constant, they can assign to constant targets (e.g. neural network inputs in the 3rd hybridization type).
+  - **Constant Targets**: Entities defined by a constant value but may be subject to event assignments (e.g., SBML model parameters that are not targets of rate or assignment rules). In the SciML PEtab standard, as input arrays files are constant, they can assign to constant targets (e.g. neural network inputs in the 3rd hybridization type).
   - **Model Parameter Targets**: Entities corresponding to model parameters in the model file (e.g., SBML model parameters). These parameters cannot appear in the PEtab parameter table, and as discussed [here](@ref example_hybrid_output), neither in the observable formula.
 - `operationType` [STRING, required]:
   Specifies the type of operation to be performed on the target. Allowed values are:
@@ -239,11 +239,11 @@ The PEtab SciML extension introduces a new hybridization table for assigning neu
 
 The `operationType`, mapping table, and condition table together specify where a neural network model is integrated into a PEtab SciML problem. In particular (here, we refer to neural network inputs and outputs as simply inputs and outputs):
 
-1. **Neural network models in the ODE model’s right-hand side (RHS):**: If all inputs use `setAssignment` and all outputs use either `setRate` or `setParameter`, the neural network appears in the ODE right-hand side.
-2. **Neural network models in the observable function:**: If all inputs use `setAssignment` and no outputs are used in the condition table, then (at least some of) the outputs must be used in the observable formula.
-3. **Neural network models to parametrize ODEs:**: If all inputs either use `setValue`, are assigned in the condition table, or are assigned to a constant variable in the mapping table, and if all outputs use `setValue` or are assigning in the condition table, then the neural network sets model parameters or initial values before the simulation.
+1. **Neural network models in the ODE model’s right-hand side (RHS)**: If all inputs use `setAssignment` and all outputs use either `setRate` or `setParameter`, the neural network appears in the ODE right-hand side.
+2. **Neural network models in the observable function**: If all inputs use `setAssignment` and no outputs are used in the hybridization table, then the outputs must be used in the observable formulas.
+3. **Neural network models to parametrize ODEs**: If all inputs are constant targets, that is use `setValue`, are assigned in the condition table, or are assigned to a constant variable in the mapping table, and if all outputs assign using `setValue` or are assigning in the condition table, then the neural network sets model parameters or initial values before the simulation.
 
-All other combinations are disallowed because they generally do not make sense in a PEtab context. For example, if inputs use `setAssignment` and outputs use `setValue`, then parameter values prior to simulation would be set by an assignment rule derived from model equations. This is not allowed in PEtab because assignment rules might be time-dependent, and therefore outputs should use a different `operatorType`. Furthermore, if a parameter is to be assigned via a rule, it should already be incorporated into the model. The `petab_sciml` library provides a linter to ensure that no disallowed combination is used. Packages that do not wish to depend on Python are strongly encouraged to verify that the input combinations in the condition table are valid.
+All other combinations are disallowed because they generally do not make sense in a PEtab context. An important consequence of this is that if all inputs are assigned to constant targets, then neural network outputs must also be assigning to constant targets in either the hybridization or condition tables. The `petab_sciml` library provides a linter to ensure that no disallowed combination is used. For packages that do not wish to depend on Python, it is strongly recommended to verify that the input combinations in the condition table are valid.
 
 !!! note "Model structure altering assignments"
     When `setRate`, `setAssignment`, or `setParameter` are used, the model structure or observable formula is altered during model import. Effectively, a neural network is inserted into the generated functions. PEtab SciML only supports such alterations if they are applied to all conditions; hence, these alterations can only be specified in the hybridization table.
@@ -326,7 +326,7 @@ The parameter table largely follows the same format as in PEtab version 2, with 
   - [`kaimingNormal`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.kaiming_normal_) — with `gain` as `initializationDistributionParameters` value.
   - [`xavierUniform`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_uniform_) — with `gain` as `initializationDistributionParameters` value.
   - [`xavierNormal`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_normal_) — with `gain` as `initializationDistributionParameters` value.
-- - **initializationDistributionParameters [NUMERIC, optional]**: Distribution parameter value for the `initializationDistribution`. Which parameter(s) are referred to depends on the chosen prior distribution.
+- **initializationDistributionParameters [NUMERIC, optional]**: Distribution parameter value for the `initializationDistribution`. Which parameter(s) are referred to depends on the chosen prior distribution, as as in the PEtab standard, multiple parameters are separated with semicolon.
 
 ### Bounds for neural net parameters
 

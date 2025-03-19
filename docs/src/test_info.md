@@ -1,6 +1,6 @@
 # Test Suite
 
-The PEtab SciML format provides an extensive test suite to verify the correctness of tools that support the standard. The tests are divided into three parts, which are recomended to be run in this order:
+The PEtab SciML format provides an extensive test suite to verify the correctness of tools that support the standard. The tests are divided into three parts, which are recommended to be run in this order:
 
 1. Neural network import
 2. Initialization (start guesses for parameter estimation)
@@ -24,4 +24,4 @@ For each case, the following aspects are tested:
 - Accuracy of simulated values when solving the model forward in time.
 - Gradient correctness. This is particularly important for SciML models, where computing gradients can be challenging.
 
-If a tool supports providing the neural network model in a format other than the YAML fromat, we recommend modifying the tests in this folder to use another neural network format to verify the correctness of the implementation.
+If a tool supports providing the neural network model in a format other than the YAML format, we recommend modifying the tests in this folder to use another neural network format to verify the correctness of the implementation.
