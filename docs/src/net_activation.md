@@ -4,8 +4,6 @@ The PEtab SciML neural network model YAML format supports numerous standard neur
 
 If support is lacking for a layer or activation function you would like to see, please file an issue on [GitHub](https://github.com/sebapersson/petab_sciml/issues).
 
-## Supported Neural Network Layers
-
 The table below lists the supported and tested neural network layers along with links to their respective PyTorch documentation. Additionally, the table indicates which tools support each layer.
 
 | layer                                                                                                                     | PEtab.jl | AMICI |
