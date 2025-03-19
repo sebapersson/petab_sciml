@@ -338,9 +338,9 @@ Different layers can have distinct initialization prior parameters. For example,
 
 | **parameterId**    | **parameterScale** | **lowerBound** | **upperBound** | **estimate** | **nominalValue** | **initializationDistribution** | **initializationDistributionParameters** |
 |--------------------|--------------------|----------------|----------------|------------|------------------|-----------------------------|-------------------------------------|
-| net1\_ps            | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer1_ps     | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer2_ps     | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 5/3                                 |
+| net1\_ps            | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer1_ps     | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer2_ps     | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 5/3                                 |
 
 Where `parameterId` are assumed to have been properly assigned in the [mapping table](@ref mapping_table). In this example, each layer references the same file variable for `nominalValue`. This means the layers obtain their values from the specified file.
 
@@ -348,9 +348,9 @@ It is also possible to specify different priors for different parameter arrays w
 
 | **parameterId**      | **parameterScale** | **lowerBound** | **upperBound** | **estimate** | **nominalValue** | **initializationDistribution** | **initializationDistributionParameters** |
 |----------------------|--------------------|----------------|----------------|------------|------------------|-----------------------------|-------------------------------------|
-| net1\_ps              | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer1_weight   | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer1_bias     | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingNormal               | 5/3                                 |
+| net1\_ps              | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer1_weight   | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer1_bias     | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingNormal               | 5/3                                 |
 
 ## [Problem YAML File](@id YAML_file)
 
@@ -359,7 +359,7 @@ The PEtab problem YAML file follows the PEtab version 2 format, except that a ma
 - `extensions > petab_sciml > neural_nets`: Here each neural network is defined via a key-value mapping, where the key is the neural network Id. The corresponding value is an object whose fields depend on the network format:
   - For models in the `petab_sciml` format, include the file path as `location`.
   - For neural networks in other formats, includes the neural network library name as `library`.
-- `extensions > petab_sciml > array_files`: Here each associated neural network array file. Parameter files should follow the structure [here](@ref hdf5_ps_structure), and input files the structure [here](@ref hdf5_input_structure). Eachentry specified with a key-value mapping, where the key is the array Id which is considered a **valid** PEtab Id. The corresponding value is an object that includes:
+- `extensions > petab_sciml > array_files`: Here each associated neural network array file. Parameter files should follow the structure [here](@ref hdf5_ps_structure), and input files the structure [here](@ref hdf5_input_structure). Each entry is specified with a key-value mapping, where the key is the array Id which is considered a valid PEtab Id. The corresponding value is an object that includes:
   - `location`: The file path.
   - `language`: The file format or language (e.g., HDF5).
 
