@@ -139,8 +139,8 @@ TODO: We will fix condition specific input in the YAML file later.
 
 Each neural network is assigned an Id in the PEtab SciML extension section of the PEtab problem [YAML](@ref YAML_file) file. To avoid confusion about what a neural network Id refers to (e.g., parameters, inputs, outputs), a neural network Id is not a valid PEtab identifier. Consequently, every neural network input, parameter, and output must be explicitly imported into the PEtab problem via the mapping table. Repeating parts of the PEtab standard, the key columns in the mapping table are:
 
-- **petabEntityId** [STRING, required]: A valid PEtab identifier is one that is not defined elsewhere in the PEtab problem. It can be referenced in the condition, hybridization, measurement, parameter, observable tables, and in the PEtab problem YAML file (if the variable refers to an array file), but not within the mechanistic model itself.
-- **modelEntityId** [STRING, required]: The neural network component that is mapped to the `petabEntityId`. For a neural network with Id `netId`, the valid identifiers are:
+- **petabEntityId** [STRING, REQUIRED]: A valid PEtab identifier is one that is not defined elsewhere in the PEtab problem. It can be referenced in the condition, hybridization, measurement, parameter, observable tables, and in the PEtab problem YAML file (if the variable refers to an array file), but not within the mechanistic model itself.
+- **modelEntityId** [STRING, REQUIRED]: The neural network component that is mapped to the `petabEntityId`. For a neural network with Id `netId`, the valid identifiers are:
   - `netId.parameters`: Parameters for a neural network model. A specific layer can be referenced with `netId.layerId.parameters`, and specific arrays in a layer can be referenced with `netId.layerId.arrayId`. For parameter arrays, individual indexing is not allowed.
   - `netId.input`: Input for a neural network with a single input argument (as in the first example [here](@ref YAML_net_format)). The entire input array can be mapped to a PEtab variable using `netId.input`. In this case, the mapped to PEtab variable must be assigned to, or correspond to, an array input file (see example below) with the structure described [here](@ref hdf5_input_structure). Otherwise, the input is assumed to be a `Vector`, where each element `n` should be mapped to a PEtab Id, with element `n` specified as `netId.input[{n}]`.
   - `netId.inputs`: Inputs for a neural network with multiple input arguments (as in the second example [here](@ref YAML_net_format)). Each input argument is accessed via `netId.inputs[{n}]`, and for each argument the same rules apply as for `netId.input`. For example, to access element `m` in input `n`, write `netId.inputs[{n}][{m}]`.
@@ -219,20 +219,20 @@ The PEtab SciML extension introduces a new hybridization table for assigning neu
 
 ### Detailed Field Description
 
-- `targetId` [NON\_ESTIMATED\_ENTITY\_ID, required]:
-  The identifier of the non-estimated entity that will be modified. Restrictions vary depending on the `operationType` and the model type. Targets can be one of the following:
+- `targetId` [NON\_ESTIMATED\_ENTITY\_ID, REQUIRED]:
+  The identifier of the non-estimated entity that will be modified. Restrictions vary depending on the `operationType` and the model type. Partially repeating the PEtab standard, and introducing one new target type, targets can be one of the following:
   - **Differential Targets**: Entities defined by a time derivative (e.g., targets of SBML rate rules or species that change by participating in reactions).
   - **Algebraic Targets**: Entities defined by an algebraic assignment (i.e., they are not associated with a time derivative and are generally not constant). In the context of a neural network, if the neural network appears in the observable formula or ODE RHS, its inputs are considered algebraic targets. If a neural network is exclusively of the 3rd hybridization type (**Neural network models to parametrize ODEs**), its inputs are considered to be a constant target.
   - **Constant Targets**: Entities defined by a constant value but may be subject to event assignments (e.g., SBML model parameters that are not targets of rate or assignment rules). In the SciML PEtab standard, as input arrays files are constant, they can assign to constant targets (e.g. neural network inputs in the 3rd hybridization type).
   - **Model Parameter Targets**: Entities corresponding to model parameters in the model file (e.g., SBML model parameters). These parameters cannot appear in the PEtab parameter table, and as discussed [here](@ref example_hybrid_output), neither in the observable formula.
-- `operationType` [STRING, required]:
-  Specifies the type of operation to be performed on the target. Allowed values are:
+- `operationType` [STRING, REQUIRED]:
+  Specifies the type of operation to be performed on the target. Repeating parts of the PEtab standard, allowed values are:
   - `setValue`: Sets the current value of the target to the value specified in `targetValue`. The target must be a constant target.
   - `setRate`: Sets the time derivative of the target to `targetValue`. The target must be a differential target.
   - `setAssignment`: Sets the target to the symbolic value of `targetValue`. The target must be an algebraic target.
   - `setParameter`: Sets the value of a model parameter to a dynamic neural network output. `targetValue` must be a neural network output.
 
-- `targetValue` [STRING, required]:
+- `targetValue` [STRING, REQUIRED]:
   The value or expression that will be used to change the target. The interpretation of this value depends on the specified `operationType`.
 
 ### The `operationType`, mapping table, and condition table defines hybrid model type
@@ -316,11 +316,11 @@ The parameter table largely follows the same format as in PEtab version 2, with 
 
 ### Detailed Field Description
 
-- **parameterId [String, required]**: Identifies the neural network or a specific layer/parameter array. The target of the `parameterId` must be assigned via the [mapping table](@ref mapping_table).
-- **nominalValue [String | NUMERIC, required]**: Specifies neural network nominal values. This can be:
+- **parameterId [String, REQUIRED]**: Identifies the neural network or a specific layer/parameter array. The target of the `parameterId` must be assigned via the [mapping table](@ref mapping_table).
+- **nominalValue [String | NUMERIC, REQUIRED]**: Specifies neural network nominal values. This can be:
   - A PEtab variable that via the problem [YAML file](@ref YAML_file) maps to an HDF5 file with the required [structure](@ref hdf5_ps_structure). If no file exists at the given path when the problem is imported and the parameters are set to be estimated, a file is created with randomly sampled values. Unless a numeric value is provided, referring to the same file is required for all assignments for a neural network, since all neural network parameters should be collected in a single HDF5 file following the structure described [here](@ref hdf5_ps_structure).
   - A numeric value applied to all parameters under `parameterId`.
-- **estimate [0 | 1, required]**: Indicates whether the parameters are estimated (`1`) or fixed (`0`). This must be consistent across layers. For example, if `netId` has `estimate = 0`, then potential layer rows must also be `0`. In other words, freezing individual network parameters is not allowed.
+- **estimate [0 | 1, REQUIRED]**: Indicates whether the parameters are estimated (`1`) or fixed (`0`). This must be consistent across layers. For example, if `netId` has `estimate = 0`, then potential layer rows must also be `0`. In other words, freezing individual network parameters is not allowed.
 - **initializationDistribution [String, optional]**: Specifies the prior used for sampling initial values before parameter estimation. In addition to the PEtab-supported priors [ADD], the SciML extension supports the following standard neural network initialization priors:
   - [`kaimingUniform`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.kaiming_uniform_) (default) — with `gain` as `initializationDistributionParameters` value.
   - [`kaimingNormal`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.kaiming_normal_) — with `gain` as `initializationDistributionParameters` value.
