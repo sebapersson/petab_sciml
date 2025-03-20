@@ -328,10 +328,9 @@ The parameter table largely follows the same format as in PEtab version 2, with 
   - [`xavierNormal`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_normal_) — with `gain` as `initializationDistributionParameters` value.
 - **initializationDistributionParameters [NUMERIC, optional]**: Distribution parameter value for the `initializationDistribution`. Which parameter(s) are referred to depends on the chosen prior distribution, as in the PEtab standard, multiple parameters are separated with semicolon.
 
-
 ### Bounds for neural net parameters
 
-Bounds can be specified for an entire network or its nested levels. However, it should be noted that most optimization algorithms used for neural networks, such as ADAM, do not support parameter bounds in their standard implementations. Therefore, for neural network models, bounds are optional and default to `-Inf` for the lower bound and `Inf` for the upper bound.
+Bounds can be specified for an entire network or its nested levels. However, it should be noted that most optimization algorithms used for neural networks, such as ADAM, do not support parameter bounds in their standard implementations. Therefore, for neural network models, bounds are optional and default to `-inf` for the lower bound and `inf` for the upper bound.
 
 ### Example: Different Priors for Different Layers
 
@@ -339,9 +338,9 @@ Different layers can have distinct initialization prior parameters. For example,
 
 | **parameterId**    | **parameterScale** | **lowerBound** | **upperBound** | **estimate** | **nominalValue** | **initializationDistribution** | **initializationDistributionParameters** |
 |--------------------|--------------------|----------------|----------------|------------|------------------|-----------------------------|-------------------------------------|
-| net1\_ps            | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer1_ps     | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer2_ps     | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 5/3                                 |
+| net1\_ps            | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer1_ps     | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer2_ps     | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 5/3                                 |
 
 Where `parameterId` are assumed to have been properly assigned in the [mapping table](@ref mapping_table). In this example, each layer references the same file variable for `nominalValue`. This means the layers obtain their values from the specified file.
 
@@ -349,9 +348,9 @@ It is also possible to specify different priors for different parameter arrays w
 
 | **parameterId**      | **parameterScale** | **lowerBound** | **upperBound** | **estimate** | **nominalValue** | **initializationDistribution** | **initializationDistributionParameters** |
 |----------------------|--------------------|----------------|----------------|------------|------------------|-----------------------------|-------------------------------------|
-| net1\_ps              | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer1_weight   | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
-| net1\_layer1_bias     | lin                | -Inf           | Inf            | 1          | netId1\_ps     | kaimingNormal               | 5/3                                 |
+| net1\_ps              | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer1_weight   | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingUniform              | 1                                   |
+| net1\_layer1_bias     | lin                | -inf           | inf            | 1          | netId1\_ps     | kaimingNormal               | 5/3                                 |
 
 ## [Problem YAML File](@id YAML_file)
 
