@@ -326,7 +326,8 @@ The parameter table largely follows the same format as in PEtab version 2, with 
   - [`kaimingNormal`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.kaiming_normal_) — with `gain` as `initializationDistributionParameters` value.
   - [`xavierUniform`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_uniform_) — with `gain` as `initializationDistributionParameters` value.
   - [`xavierNormal`](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_normal_) — with `gain` as `initializationDistributionParameters` value.
-- **initializationDistributionParameters [NUMERIC, optional]**: Distribution parameter value for the `initializationDistribution`. Which parameter(s) are referred to depends on the chosen prior distribution, as as in the PEtab standard, multiple parameters are separated with semicolon.
+- **initializationDistributionParameters [NUMERIC, optional]**: Distribution parameter value for the `initializationDistribution`. Which parameter(s) are referred to depends on the chosen prior distribution, as in the PEtab standard, multiple parameters are separated with semicolon.
+
 
 ### Bounds for neural net parameters
 
