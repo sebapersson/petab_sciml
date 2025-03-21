@@ -137,14 +137,54 @@ TODO: We will fix condition specific input in the YAML file later.
 
 ## [Mapping Table](@id mapping_table)
 
-Each neural network is assigned an Id in the PEtab SciML extension section of the PEtab problem [YAML](@ref YAML_file) file. To avoid confusion about what a neural network Id refers to (e.g., parameters, inputs, outputs), a neural network Id is not a valid PEtab identifier. Consequently, every neural network input, parameter, and output must be explicitly imported into the PEtab problem via the mapping table. Repeating parts of the PEtab standard, the key columns in the mapping table are:
+Each neural network is assigned an Id in the PEtab SciML extension section of the PEtab problem [YAML](@ref YAML_file) file. To avoid confusion about what a neural network Id refers to (e.g., parameters, inputs, outputs), a neural network Id is not a valid PEtab identifier. Therefore, every neural network input, parameter, and output that will be referenced in the PEtab problem must be mapped to PEtab identifiers problem via the mapping table. Repeating parts of the PEtab standard, the key columns in the mapping table are:
+
 
 - **petabEntityId** [STRING, REQUIRED]: A valid PEtab identifier is one that is not defined elsewhere in the PEtab problem. It can be referenced in the condition, hybridization, measurement, parameter, observable tables, and in the PEtab problem YAML file (if the variable refers to an array file), but not within the mechanistic model itself.
-- **modelEntityId** [STRING, REQUIRED]: The neural network component that is mapped to the `petabEntityId`. For a neural network with Id `netId`, the valid identifiers are:
-  - `netId.parameters`: Parameters for a neural network model. A specific layer can be referenced with `netId.layerId.parameters`, and specific arrays in a layer can be referenced with `netId.layerId.arrayId`. For parameter arrays, individual indexing is not allowed.
-  - `netId.input`: Input for a neural network with a single input argument (as in the first example [here](@ref YAML_net_format)). The entire input array can be mapped to a PEtab variable using `netId.input`. In this case, the mapped to PEtab variable must be assigned to, or correspond to, an array input file (see example below) with the structure described [here](@ref hdf5_input_structure). Otherwise, the input is assumed to be a `Vector`, where each element `n` should be mapped to a PEtab Id, with element `n` specified as `netId.input[{n}]`.
-  - `netId.inputs`: Inputs for a neural network with multiple input arguments (as in the second example [here](@ref YAML_net_format)). Each input argument is accessed via `netId.inputs[{n}]`, and for each argument the same rules apply as for `netId.input`. For example, to access element `m` in input `n`, write `netId.inputs[{n}][{m}]`.
-  - `netId.output`: Neural network output, assumed to be a `Vector`, where each element `n` should be mapped to a PEtab Id, with element `n` given by `netId.input[{n}]`.
+### `modelEntityId` [STRING, REQUIRED]
+
+We introduce a modeling-language-independent syntax to refer to inputs, outputs, and parameters of neural networks.
+
+#### Parameters
+The model ID `$netId.parameters{[$layerId].{$parameterName{[$parameterIndex}]}} refers to individual parameters of a neural network identified by `$netId`.
+
+- `$layerId` refers to the unique identifier of the layer (e.g., `conv1`)
+- `$parameterName` refers to the parameter name specific to that layer (e.g., `weight`)
+- `$parameterIndex` supports indexing into the parameter ([syntax](@ref mapping_table_indexing))
+
+#### Inputs
+The model ID `$netId.inputs{[$inputId]{[$inputIndex]}}` refers to specific inputs of the network.
+
+- `$inputId` corresponds to the input argument name in the forward method signature (e.g., `input1`)
+- `$inputIndex` allows indexing ([syntax](@ref mapping_table_indexing))
+
+#### Outputs
+The model ID `$netId.outputs{[$outputId]{[$outputIndex]}}` refers to specific outputs of the network.
+
+- `$outputId` refers to the output identifier (e.g., `output`)
+- `$outputIndex` allows indexing ([syntax](@ref mapping_table_indexing))
+
+#### Nested Identifiers
+
+PEtab SciML supports **nested identifiers** to map structured or hierarchical elements. These identifiers follow a hierarchical format which is indicated above using nested curly brackets. Valid examples include:
+
+- `net1.parameters`
+- `net1.parameters[conv1]`
+- `net1.parameters[conv1].weight`
+
+!!! Note: Identifiers breaking the hierarchy, e.g., `net1.parameters.weight`, are **not valid**.
+
+
+#### Indexing (@id mapping_table_indexing)
+
+TBD
+
+#### Assigning Values
+
+For assignments to nested PEtab identifiers (in the `parameters`, `hybridisations`, or `conditions` tables), assigned values must either:
+
+- Refer to another PEtab identifier with the same nested structure, **or**
+- Follow the corresponding [hierarchical HDF5 syntax](@ref hdf5_input_structure)
 
 ### Example: Network with Scalar Inputs
 
