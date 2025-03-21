@@ -399,7 +399,8 @@ The PEtab problem YAML file follows the PEtab version 2 format, except that a ma
 - `extensions > petab_sciml > neural_nets`: Here each neural network is defined via a key-value mapping, where the key is the neural network Id. The corresponding value is an object whose fields depend on the network format:
   - For models in the `petab_sciml` format, include the file path as `location`.
   - For neural networks in other formats, includes the neural network library name as `library`.
-- `extensions > petab_sciml > array_files`: Here each associated neural network array file. Parameter files should follow the structure [here](@ref hdf5_ps_structure), and input files the structure [here](@ref hdf5_input_structure). Each entry is specified with a key-value mapping, where the key is the array Id which is considered a valid PEtab Id. The corresponding value is an object that includes:
+- `extensions > petab_sciml > array_files`: Specifies array files. Parameter files should follow the structure [here](@ref hdf5_ps_structure), and input files the structure [here](@ref hdf5_input_structure). Each entry is specified with a key-value mapping, where the key is the array Id which is considered a valid PEtab Id. The corresponding value is a dict with:
+
   - `location`: The file path.
   - `language`: The file format or language (e.g., HDF5).
 
