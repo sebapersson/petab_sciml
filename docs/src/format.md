@@ -5,7 +5,7 @@ A PEtab SciML problem extends the PEtab standard version 2 to accommodate hybrid
 1. [Neural Net File(s)](@ref net_format): Optional YAML file(s) describing neural net model(s).
 2. [Hybridization table](@ref hybrid_table): Table for assigning neural network outputs and inputs.
 
-The extension further extends the following standard PEtab files:
+PEtab SciML further extends the following standard PEtab files:
 
 1. [Mapping Table](@ref mapping_table): Extended to describe how neural network inputs and outputs map to PEtab variables.
 2. [Parameters Table](@ref parameter_table): Extended to describe nominal values for network parameters.
@@ -26,9 +26,9 @@ A PEtab SciML problem can also include multiple neural networks. Aside from ensu
 
 ## [Neural Network Model Format](@id net_format)
 
-The neural network model format is flexible, meaning models can be provided in any format compatible with the PEtab SciML format (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library provides a neural network YAML file format that can be imported by tools across various programming languages. This format flexibility exists because, although the YAML format can accommodate many architectures, some may still be difficult to represent. However, the YAML format is recommended whenever possible to facilitate model exchange across different software.
+The neural network model format is flexible, meaning models can be provided in any format compatible with the PEtab SciML specification (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library provides a neural network YAML file format that can be imported by tools across various programming languages. This format flexibility exists because, although the YAML format can accommodate many architectures, some may still be difficult to represent. However, the YAML format is recommended whenever possible to facilitate model exchange.
 
-A neural network model must consist of two parts to be compatible with the PEtab SciML standard:
+A neural network model must consist of two parts to be compatible with the PEtab SciML specification:
 
 - **layers**: A constructor that defines the network layers, each with a unique identifier.
 - **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n}`. Similar holds for the output. Aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
@@ -74,13 +74,13 @@ TODO: We will fix condition specific input in the YAML file later.
 
 ### [YAML Network file format](@id YAML_net_format)
 
-The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. While YAML files can be written manually, it is recommended approach to define a PyTorch `nn.Module` and use the `petab_sciml` library to automatically generate the YAML representation (see tutorials).
+The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. While YAML network files can be written manually, it is recommended approach to define a PyTorch `nn.Module` and use the `petab_sciml` library to automatically generate the YAML representation (see tutorials).
 
 TODO: Should we have some description of the YAML format here? (can and should probably be added later)
 
 ## [Mapping Table](@id mapping_table)
 
-All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to prevent confusion regarding what its refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined in the mapping table under `modelEntityId` and mapped to a PEtab identifier. Note, in this context array file Ids defined in the [YAML](@ref YAML_file) file are considered valid entities in the `PEtabEntityId` column.
+All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to prevent confusion regarding what its refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined in the mapping table under `modelEntityId` and mapped to a PEtab identifier. All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to avoid confusion about what it refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined under `modelEntityId` in the mapping table and mapped to a PEtab identifier. For the `PEtabEntityId` column the same rules as in PEtab v2 applies, and additionally array file Ids defined in the [YAML](@ref YAML_file) file are considered valid PEtab entities.
 
 ### `modelEntityId` [STRING, REQUIRED]
 
@@ -110,7 +110,7 @@ The model Id `$netId.outputs{[outputArgumentIndex]{[$outputIndex]}}` refers to s
 
 #### Nested Identifiers
 
-The PEtab SciML extension supports nested identifiers for mapping structured or hierarchical elements. Identifiers are expressed in a hierarchical which is indicate above using nested curly brackets. Valid examples are:
+The PEtab SciML extension supports nested identifiers for mapping structured or hierarchical elements. Identifiers are expressed in the hierarchical indicated above using nested curly brackets. Valid examples are:
 
 - `net1.parameters`
 - `net1.parameters[conv1]`
@@ -151,33 +151,33 @@ A tab-separated values file for assigning neural network inputs and outputs. Ass
 
 ### Pre-simulation hybridization
 
-Pre-simulation neural network model inputs and outputs are constant targets (case 1 [here](@ref hybrid_types)).
+Pre-simulation neural network model inputs and outputs are constant targets (see case 1 [here](@ref hybrid_types)).
 
 #### Inputs
 
 Valid `targetValue`'s for a neural network input are:
 
-- A parameter in the parameter table
+- A parameter in the parameter table.
 - An array input file (assigned an Id in the [YAML problem file](@ref YAML_file)).
 
 #### Outputs
 
 Valid `targetId`'s for a neural network output are:
 
-- A non-estimated model parameter
+- A non-estimated model parameter.
 - A specie's initial value (referenced by the specie's Id). In this case, any other specie initialization is overridden.
 
 #### Condition and Hybridization Tables
 
-Pre-simulation assignments can alternatively be made in the conditions table. Combinations are also permitted, for example, all inputs can be assigned in the condition table while all outputs are assigned in the hybridization table. **Importantly**, however, since the hybridization table defines assignments for all simulation conditions, any `targetId` assigned in the condition table cannot be assigned in the hybridization table, and vice versa.
+Pre-simulation assignments can alternatively be made in the conditions table. Combinations are also permitted, for example, all inputs can be assigned in the condition table while all outputs are assigning in the hybridization table. **Importantly**, since the hybridization table defines assignments for all simulation conditions, any `targetId` assigned in the condition table cannot be assigned in the hybridization table, and vice versa.
 
 ### Intra-simulation hybridization
 
-Intra-simulation neural network models depend on model simulated model quantities (case 2 [here](@ref hybrid_types)).
+Intra-simulation neural network models depend on model simulated model quantities (see case 2 [here](@ref hybrid_types)).
 
 #### Inputs
 
-Valid `targetValue` for a neural network input is an expression that depend on model species, time, and/or parameters. Any species and/or parameters in the expression are expected to be evaluated at the given time-value.
+Valid `targetValue` for a neural network input is an expression that depend on model species, time, and/or parameters. Any model species and/or parameters in the expression are expected to be evaluated at the given time-value.
 
 #### Outputs
 
@@ -190,7 +190,7 @@ Valid `targetId` for a neural network output is a constant model parameter. Duri
 The parameter table follows the same format as in PEtab version 2, with a subset of fields extended to accommodate neural network parameters. This section focuses on columns extended by the SciML extension.
 
 !!! note "Specific Assignments Have Precedence"
-    More specific assignments (e.g., `netId.parameters[layerId]` instead of `netId.parameters`) have precedence for nominal values, priors, and other setting. For example, if a nominal values is assigned to `netId` and a different nominal value is assigned to `netId.parameters[layerId]`, the latter is used in place of the former.
+    More specific assignments (e.g., `netId.parameters[layerId]` instead of `netId.parameters`) have precedence for nominal values, priors, and other setting. For example, if a nominal values is assigned to `netId.parameters` and a different nominal value is assigned to `netId.parameters[layerId]`, the latter is used in place of the former.
 
 ### Detailed Field Description
 
@@ -208,7 +208,7 @@ Bounds can be specified for an entire network or its nested identifiers. However
 
 An extension section is included in the PEtab SciML YAML file for specifying neural network YAML files, as well as array parameter, input, and output files. These elements are defined using the following key-value mappings:
 
-- `file[extensions][petab_sciml][neural_nets]`: Neural network models. Here, each network is defined as a key-value mapping, where the key is the unique neural network Id (`netId`), and the corresponding value is another key-value mapping:
+- `file[extensions][petab_sciml][neural_nets]`: Neural network models. Each network is defined as a key-value mapping, where the key is the unique neural network Id (`netId`), and the corresponding value is another key-value mapping:
   - `[netId][location]`: The file path where the neural network model is stored.
   - `[netId][format]`: The neural network format. Expected to be `YAML` if the network is provided in the PEtab SciML library [YAML format](@ref YAML_net_format). Otherwise, the neural network library should be provided (e.g Lux.jl or equinox.py).
   - `[netId][hybridization]`: The neural network hybridization type. Expected to be either `pre_simulation` or `intra_simulation` (for type information see [here](@ref hybrid_types)).
@@ -216,4 +216,4 @@ An extension section is included in the PEtab SciML YAML file for specifying neu
   - `[arrayId][location]`: The file path.
   - `[arrayId][format]`: The file format (e.g., HDF5).
 
-If a neural network is provided in another format than the YAML format, respective tool must provide the network during problem import. Note that regardless of neural-network format, for exchange purposes the neural network model **must** be available in a file (not in the main script).
+If a neural network is provided in another format than the YAML format, respective tool must provide the network during problem import. Note that regardless of neural-network format, for exchange purposes the neural network model **must** be available in a file (not in the main PEtab problem import script).
