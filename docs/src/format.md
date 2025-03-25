@@ -7,7 +7,7 @@ A PEtab SciML problem extends the PEtab standard version 2 to accommodate hybrid
 
 PEtab SciML further extends the following standard PEtab files:
 
-1. [Mapping Table](@ref mapping_table): Extended to describe how neural network inputs and outputs map to PEtab variables.
+1. [Mapping Table](@ref mapping_table): Extended to describe how neural network inputs, outputs and parameters map to PEtab variables.
 2. [Parameters Table](@ref parameter_table): Extended to describe nominal values for network parameters.
 3. [Problem YAML File](@ref YAML_file): Extended to include a new SciML field for neural network models and (optionally) array or tensor formatted data.
 
@@ -20,7 +20,7 @@ The PEtab SciML specification is designed to keep the dynamic model, neural netw
 PEtab SciML supports two classes of hybrid models:
 
 1. **Pre simulation hybridization**: The neural network model sets constant parameters and/or initial values in the ODE model prior to model simulation. Inputs are constant per simulation condition.
-2. **Intra simulation hybridization**: The neural network model appears in the ODE RHS and/or observable formula. Inputs are per time-point computed from simulated quantities.
+2. **Intra simulation hybridization**: The neural network model appears in the ODE right-hand-side (RHS) and/or observable formula. Inputs are per time-point computed from simulated quantities.
 
 A PEtab SciML problem can also include multiple neural networks. Aside from ensuring that neural networks do not conflict (e.g., by sharing the same output), no special considerations are required. Each additional network is included just as it would be in the single-network case.
 
@@ -80,7 +80,7 @@ TODO: Should we have some description of the YAML format here? (can and should p
 
 ## [Mapping Table](@id mapping_table)
 
-All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to prevent confusion regarding what its refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined in the mapping table under `modelEntityId` and mapped to a PEtab identifier. All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to avoid confusion about what it refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined under `modelEntityId` in the mapping table and mapped to a PEtab identifier. For the `PEtabEntityId` column the same rules as in PEtab v2 applies, and additionally array file Ids defined in the [YAML](@ref YAML_file) file are considered valid PEtab entities.
+All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to avoid confusion about what it refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined under `modelEntityId` and mapped to a PEtab identifier. For the `PEtabEntityId` column the same rules as in PEtab v2 apply, and additionally array file Ids defined in the [YAML](@ref YAML_file) file are considered valid PEtab entities.
 
 ### `modelEntityId` [STRING, REQUIRED]
 
@@ -181,7 +181,7 @@ Valid `targetValue` for a neural network input is an expression that depend on m
 
 #### Outputs
 
-Valid `targetId` for a neural network output is a constant model parameter. During PEtab problem import, assigned parameters are replaced by the neural network output in the ODE RHS.
+Valid `targetId` for a neural network output is a constant model parameter. During PEtab problem import, any assigned parameters is replaced by the neural network output in the ODE RHS.
 
 **Importantly**, it is invalid for a model parameter assigned by a neural network output to appear in both the ODE RHS and the observable formula. In the observable formula, neural network output PEtab identifiers are expected to be directly encoded, making a neural network–assigned parameter in the formula ambiguous. Conversely, it is considered valid if a neural network output is used to assign an ODE model parameter and is also directly encoded in the observable formula.
 
@@ -190,7 +190,7 @@ Valid `targetId` for a neural network output is a constant model parameter. Duri
 The parameter table follows the same format as in PEtab version 2, with a subset of fields extended to accommodate neural network parameters. This section focuses on columns extended by the SciML extension.
 
 !!! note "Specific Assignments Have Precedence"
-    More specific assignments (e.g., `netId.parameters[layerId]` instead of `netId.parameters`) have precedence for nominal values, priors, and other setting. For example, if a nominal values is assigned to `netId.parameters` and a different nominal value is assigned to `netId.parameters[layerId]`, the latter is used in place of the former.
+    More specific assignments (e.g., `netId.parameters[layerId]` instead of `netId.parameters`) have precedence for nominal values, priors, and other setting. For example, if a nominal values is assigned to `netId.parameters` and a different nominal value is assigned to `netId.parameters[layerId]`, the latter is used.
 
 ### Detailed Field Description
 
