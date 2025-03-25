@@ -2,15 +2,14 @@
 
 The PEtab SciML extension expands the [PEtab](https://petab.readthedocs.io/en/latest/) standard for parameter estimation problems to support hybrid models that combine data-driven neural network models with a mechanistic Ordinary Differential Equation (ODE) model. This enables a reproducible format for specifying and ultimately fitting hybrid models to time-series or dose-response data. This repository contains both the format specification and a Python library for exporting neural network models to a standard YAML format, which can be imported across multiple programming languages.
 
-## Major Highlights
+## Highlights
 
 * A file format that supports three approaches for combining mechanistic and neural network models:
-  * Incorporating neural network model(s) data-driven model in the ODE model right-hand side.
-  * Incorporating neural network model(s) in the observable formula which describes the mapping between simulation output and measurement data.
+  * Incorporating neural network model(s) data-driven model in the ODE model right-hand side and/or observable formula which describes the mapping between simulation output and measurement data.
   * Incorporating neural network model(s) to set constant model parameter values prior to simulation, allowing for example, available metadata to be used to set parameter values.
 * Support for many neural network architectures, including most standard layers and activation functions available in packages such as PyTorch.
 * Implementations in tools across two programming languages. In particular, both [PEtab.jl](https://github.com/sebapersson/PEtab.jl) in Julia and AMICI in Python (Jax) can import problems in the PEtab SciML format.
-* an extensive test suite that ensures the correctness of tools supporting the format.
+* An extensive test suite that ensures the correctness of tools supporting the format.
 
 ## Installation
 
