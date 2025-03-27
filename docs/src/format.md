@@ -30,7 +30,7 @@ The neural network model format is flexible, meaning models can be provided in a
 
 A neural network model must consist of two parts to be compatible with the PEtab SciML specification:
 
-- **layers**: A constructor that defines the network layers, each with a unique identifier.
+- **layers**: Defines the network layers, each with a unique identifier.
 - **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n}`. Similar holds for the output. Aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
 
 ### [Neural Network Parameters](@id hdf5_ps_structure)
@@ -39,12 +39,12 @@ All parameters for a neural network model are stored in an HDF5 file, with the f
 
 ```hdf5
 parameters.hdf5
-└───layerId{1} (group)
-│   ├── arrayId{1}
-│   └── arrayId{2}
-└───layerId{2} (group)
-    ├── arrayId{1}
-    └── arrayId{2}
+└───layerId1 (group)
+│   ├── arrayId1
+│   └── arrayId2
+└───layerId2 (group)
+    ├── arrayId1
+    └── arrayId2
 ```
 
 The indexing convention and naming for `arrayId` depend on the neural network model library:
@@ -98,14 +98,14 @@ The model Id `$netId.parameters[$layerId].{[$arrayId]{[$parameterIndex]}}` refer
 
 The model Id `$netId.inputs{[$inputArgumentIndex]{[$inputIndex]}}` refers to specific inputs of the network identified by `$netId`.
 
-- `$inputArgumentIndex`: The input argument number in the neural network forward function. Starts from 1.
+- `$inputArgumentIndex`: The input argument number in the neural network forward function. Starts from 0.
 - `$inputIndex` Indexing into the input argument ([syntax](@ref mapping_table_indexing)). Should not be specified if the input is a file.
 
 #### Outputs
 
 The model Id `$netId.outputs{[outputArgumentIndex]{[$outputIndex]}}` refers to specific outputs of a neural network identified by `$netId`.
 
-- `$outputId`: The output argument number in the neural network forward function. Starts from 1.
+- `$outputId`: The output argument number in the neural network forward function. Starts from 0.
 - `$outputIndex`: Indexing into the output argument ([syntax](@ref mapping_table_indexing))
 
 #### Nested Identifiers
@@ -121,7 +121,7 @@ The PEtab SciML extension supports nested identifiers for mapping structured or 
 
 #### [Indexing](@id mapping_table_indexing)
 
-Indexing into arrays follows the format `[i1, i2, ...]`, and indexing notation depends on the neural network library:
+Indexing into arrays follows the format `[i0, i1, ...]`, and indexing notation depends on the neural network library:
 
 - Neural network models in the PEtab SciML [YAML format](@ref YAML_net_format) follow PyTorch indexing. Consequently, indexing is 0-based.
 - Neural network models in other formats follow the indexing and naming conventions of the respective package and programming language.
@@ -169,7 +169,9 @@ Valid `targetId`'s for a neural network output are:
 
 #### Condition and Hybridization Tables
 
-Pre-simulation assignments can alternatively be made in the conditions table. Combinations are also permitted, for example, all inputs can be assigned in the condition table while all outputs are assigning in the hybridization table. **Importantly**, since the hybridization table defines assignments for all simulation conditions, any `targetId` assigned in the condition table cannot be assigned in the hybridization table, and vice versa.
+Neural network input variables are valid `targetId`s for the condition table as long as, following the PEtab standard, they are NON_PARAMETER_TABLE_ID. **Importantly**, since the hybridization table defines assignments for all simulation conditions, any `targetId` in the condition table cannot appear in the hybridization table, and vice versa.
+
+Neural network output variables can also appear in the `targetValue` column of the condition table.
 
 ### Intra-simulation hybridization
 
