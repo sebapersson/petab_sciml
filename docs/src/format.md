@@ -20,7 +20,8 @@ The PEtab SciML specification is designed to keep the dynamic model, neural netw
 PEtab SciML supports two classes of hybrid models:
 
 1. **Pre simulation hybridization**: The neural network model sets constant parameters and/or initial values in the ODE model prior to model simulation. Inputs are constant per simulation condition.
-2. **Intra simulation hybridization**: The neural network model appears in the ODE right-hand-side (RHS) and/or observable formula. Inputs are per time-point computed from simulated quantities.
+2. **Intra simulation hybridization**: The neural network model appears in the ODE right-hand-side (RHS) and/or observable formula. Inputs and outputs are computed dynamically over the course of a simulation.
+
 
 A PEtab SciML problem can also include multiple neural networks. Aside from ensuring that neural networks do not conflict (e.g., by sharing the same output), no special considerations are required. Each additional network is included just as it would be in the single-network case.
 
@@ -80,7 +81,8 @@ TODO: Should we have some description of the YAML format here? (can and should p
 
 ## [Mapping Table](@id mapping_table)
 
-All neural networks are assigned an Id in the PEtab problem [YAML](@ref YAML_file) file. A neural network Id is not considered a valid PEtab identifier, to avoid confusion about what it refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined under `modelEntityId` and mapped to a PEtab identifier. For the `PEtabEntityId` column the same rules as in PEtab v2 apply, and additionally array file Ids defined in the [YAML](@ref YAML_file) file are considered valid PEtab entities.
+All neural networks are assigned an identifier in the PEtab problem [YAML](@ref YAML_file) file. A neural network identifier is not considered a valid PEtab identifier, to avoid confusion about what it refers to (e.g., parameters, inputs, outputs). Consequently, every neural network input, parameter, and output referenced in the PEtab problem must be defined under `modelEntityId` and mapped to a PEtab identifier. For the `PEtabEntityId` column the same rules as in PEtab v2 apply, and additionally array file Ids defined in the [YAML](@ref YAML_file) file are considered valid PEtab entities.
+
 
 ### `modelEntityId` [STRING, REQUIRED]
 
@@ -165,7 +167,7 @@ Valid `targetValue`'s for a neural network input are:
 Valid `targetId`'s for a neural network output are:
 
 - A non-estimated model parameter.
-- A specie's initial value (referenced by the specie's Id). In this case, any other specie initialization is overridden.
+- A species' initial value (referenced by the species' Id). In this case, any other species initialization is overridden.
 
 #### Condition and Hybridization Tables
 
@@ -206,14 +208,38 @@ Bounds can be specified for an entire network or its nested identifiers. However
 
 ## [Problem YAML File](@id YAML_file)
 
-An extension section is included in the PEtab SciML YAML file for specifying neural network YAML files, as well as array parameter, input, and output files. These elements are defined using the following key-value mappings:
+The `petab_sciml` extension is defined within the `extensions` section of a PEtab YAML file. It specifies the configuration of neural networks and optional array files used for simulation or parameter estimation.
 
-- `file[extensions][petab_sciml][neural_nets]`: Neural network models. Each network is defined as a key-value mapping, where the key is the unique neural network Id (`netId`), and the corresponding value is another key-value mapping:
-  - `[netId][location]`: The file path where the neural network model is stored.
-  - `[netId][format]`: The neural network format. Expected to be `YAML` if the network is provided in the PEtab SciML library [YAML format](@ref YAML_net_format). Otherwise, the neural network library should be provided (e.g Lux.jl or equinox.py).
-  - `[netId][hybridization]`: The neural network hybridization type. Expected to be either `pre_simulation` or `intra_simulation` (for type information see [here](@ref hybrid_types)).
-- `yaml_file[extensions][petab_sciml][array_files]`  Potential array files. Parameter files are expected to follow the structure described [here](@ref hdf5_ps_structure), and input files should follow the structure described [here](@ref hdf5_input_structure). Each entry is defined with a key-value mapping where the key is the array Id (`arrayId`), and the corresponding value is another key-value mapping:
-  - `[arrayId][location]`: The file path.
-  - `[arrayId][format]`: The file format (e.g., HDF5).
+### Fields
+
+#### `neural_nets` (required)
+
+A list of neural network definitions. Each entry is a mapping with the following keys:
+
+- **`location`** (`str`):  
+  File path to the neural network model.
+
+- **`format`** (`str`):  
+  Format of the neural network. Use `YAML` if the model is defined in the [PEtab SciML YAML format](@ref YAML_net_format).  
+  For models defined using external libraries, specify the library name (e.g., `Lux.jl`, `equinox.py`).
+
+- **`dynamic`** (`bool`):  
+  Indicates the hybridization type:  
+  - `true`: dynamic hybridization  
+  - `false`: static hybridization  
+  For more information, see [Hybrid Types](@ref hybrid_types).
+
+#### `array_files` (optional)
+
+A list of array file definitions. Each entry is a mapping with the following keys:
+
+- **`location`** (`str`):  
+  File path to the array file.
+
+- **`format`** (`str`):  
+  Format of the file (e.g., `HDF5`).
+
+Parameter array files must follow the structure described in [HDF5 Parameter Structure](@ref hdf5_ps_structure).  
+Input array files must follow the structure described in [HDF5 Input Structure](@ref hdf5_input_structure).
 
 If a neural network is provided in another format than the YAML format, respective tool must provide the network during problem import. Note that regardless of neural-network format, for exchange purposes the neural network model **must** be available in a file (not in the main PEtab problem import script).
