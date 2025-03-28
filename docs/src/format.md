@@ -31,7 +31,7 @@ The neural network model format is flexible, meaning models can be provided in a
 A neural network model must consist of two parts to be compatible with the PEtab SciML specification:
 
 - **layers**: Defines the network layers, each with a unique identifier.
-- **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n}`. Similar holds for the output. Aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
+- **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n-1}`. Similar holds for the output. Aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
 
 ### [Neural Network Parameters](@id hdf5_ps_structure)
 
@@ -53,7 +53,7 @@ The indexing convention and naming for `arrayId` depend on the neural network mo
 - Neural network models in other formats follow the indexing and naming conventions of the respective package and programming language.
 
 !!! tip "For developers: Allow export of parameters in PEtab SciML format"
-    If the neural network is not provided in the YAML format, exchange of network parameters between software is not possible. To facilitate exchange, it is recommended that tools supporting PEtab SciML implement a function capable of exporting to the PEtab SciML format if all layers in the neural network correspond to layers supported by the YAML neural network format.
+    If the neural network is not provided in the YAML format, exchange of network parameters between software is not possible. To facilitate exchange, it is recommended that tools supporting PEtab SciML implement a function capable of exporting to the PEtab SciML format if all layers in the neural network correspond to layers supported by the PEtab SciML YAML neural network format.
 
 ### [Neural Network Input](@id hdf5_input_structure)
 
@@ -97,7 +97,7 @@ The model Id `$netId.parameters[$layerId].{[$arrayId]{[$parameterIndex]}}` refer
 - `$arrayId`: The parameter array name specific to that layer (e.g., `weight`).
 - `$parameterIndex`: The indexing into the parameter array ([syntax](@ref mapping_table_indexing)).
 
-Parameter PEtab identifiers can only be referenced in the  parameters table.
+Neural network parameter PEtab identifiers can only be referenced in the  parameters table.
 
 #### Inputs
 
@@ -106,7 +106,7 @@ The model Id `$netId.inputs{[$inputArgumentIndex]{[$inputIndex]}}` refers to spe
 - `$inputArgumentIndex`: The input argument number in the neural network forward function. Starts from 0.
 - `$inputIndex` Indexing into the input argument ([syntax](@ref mapping_table_indexing)). Should not be specified if the input is a file.
 
-For [static hybridization](@ref hybrid_types) input PEtab identifiers are considered valid PETAB\_IDs without restrictions (e.g., they may be referenced in the parameters table, condition table, hybridization table, etc.). For [dynamic hybridization](@ref hybrid_types), input PEtab identifiers can only be assigned an expression in the [hybridization table](@ref hybrid_table).
+For [static hybridization](@ref hybrid_types) neural network input PEtab identifiers are considered valid PETAB\_IDs without restrictions (e.g., they may be referenced in the parameters table, condition table, hybridization table, etc.). For [dynamic hybridization](@ref hybrid_types), input PEtab identifiers can only be assigned an expression in the [hybridization table](@ref hybrid_table).
 
 #### Outputs
 
@@ -135,7 +135,7 @@ Indexing into arrays follows the format `[i0, i1, ...]`, and indexing notation d
 
 #### Assigning Values
 
-For assignments to nested PEtab identifiers (in the `parameters`, `hybridisations`, or `conditions` tables), assigned values must either:
+For assignments to nested PEtab identifiers (in the `parameters`, `hybridization`, or `conditions` tables), assigned values must either:
 
 - Refer to another PEtab identifier with the same nested structure, or
 - Follow the corresponding hierarchical HDF5 [input](@ref hdf5_input_structure) or [parameter](@ref hdf5_ps_structure) structure.
@@ -221,9 +221,9 @@ PEtab SciML files are defined within the `extensions` section of a PEtab YAML fi
 
 A list of neural network definitions. Each entry is a mapping with the following keys:
 
-- `location` (`STRING`): File path to the neural network model.
-- `format` (`STRING`): Format of the neural network. Use `YAML` if the model is defined in the [PEtab SciML YAML format](@ref YAML_net_format). For models defined using external libraries, specify the library name (e.g., `Lux.jl`, `equinox.py`).
--`dynamic` (`bool`): Indicates the hybridization type (see [Hybrid Types](@ref hybrid_types)):
+- `location` [STRING]: File path to the neural network model.
+- `format` [STRING]: Format of the neural network. Use `YAML` if the model is defined in the [PEtab SciML YAML format](@ref YAML_net_format). For models defined using external libraries, specify the library name (e.g., `Lux.jl`, `equinox.py`).
+-`dynamic` [BOOL]: Indicates the hybridization type (see [Hybrid Types](@ref hybrid_types)):
   - `true`: dynamic hybridization
   - `false`: static hybridization
 
@@ -231,8 +231,8 @@ A list of neural network definitions. Each entry is a mapping with the following
 
 A list of array file definitions. Each entry is a mapping with the following keys:
 
-- **`location`** (`STRING`): File path to the array file.
-- **`format`** (`STRING`): Format of the file (e.g., `HDF5`).
+- **`location`** [STRING]: File path to the array file.
+- **`format`** [STRING]: Format of the file (e.g., `HDF5`).
 
 Parameter array files must follow the structure described in [HDF5 Parameter Structure](@ref hdf5_ps_structure). Input array files must follow the structure described in [HDF5 Input Structure](@ref hdf5_input_structure).
 
