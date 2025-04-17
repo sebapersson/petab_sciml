@@ -37,37 +37,6 @@ $defs:
     - layer_type
     title: Layer
     type: object
-  MLModel:
-    description: 'An easy-to-use format to specify simple deep ML models.
-
-
-      There is a function to export this to a PyTorch module, or to YAML.'
-    properties:
-      mlmodel_id:
-        title: Mlmodel Id
-        type: string
-      inputs:
-        items:
-          $ref: '#/$defs/Input'
-        title: Inputs
-        type: array
-      layers:
-        items:
-          $ref: '#/$defs/Layer'
-        title: Layers
-        type: array
-      forward:
-        items:
-          $ref: '#/$defs/Node'
-        title: Forward
-        type: array
-    required:
-    - mlmodel_id
-    - inputs
-    - layers
-    - forward
-    title: MLModel
-    type: object
   Node:
     description: 'A node of the computational graph.
 
@@ -105,14 +74,33 @@ $defs:
     - target
     title: Node
     type: object
-description: Specify all ML models of your hybrid model.
+description: 'An easy-to-use format to specify simple deep ML models.
+
+
+  There is a function to export this to a PyTorch module, or to YAML.'
 properties:
-  models:
+  mlmodel_id:
+    title: Mlmodel Id
+    type: string
+  inputs:
     items:
-      $ref: '#/$defs/MLModel'
-    title: Models
+      $ref: '#/$defs/Input'
+    title: Inputs
+    type: array
+  layers:
+    items:
+      $ref: '#/$defs/Layer'
+    title: Layers
+    type: array
+  forward:
+    items:
+      $ref: '#/$defs/Node'
+    title: Forward
     type: array
 required:
-- models
-title: MLModels
+- mlmodel_id
+- inputs
+- layers
+- forward
+title: MLModel
 type: object
