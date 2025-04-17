@@ -289,4 +289,7 @@ PetabScimlStandard = YamlStandard(model=MLModel)
 
 
 if __name__ == "__main__":
-    PetabScimlStandard.save_schema("standard/schema.yaml")
+    from pathlib import Path
+
+
+    PetabScimlStandard.save_schema(Path(__file__).resolve().parents[3] / "docs" / "src" / "assets" / "net_schema.yaml")
