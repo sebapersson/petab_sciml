@@ -36,18 +36,22 @@ A neural network model must consist of two parts to be compatible with the PEtab
 - **layers**: Defines the network layers, each with a unique identifier.
 - **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n-1}`. Similar holds for the output. Aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
 
-### [Neural Network Parameter Data](@id hdf5_ps_structure)
+### [Neural Network Parameter Values](@id hdf5_ps_structure)
 
-The values of all parameters for a neural network model are stored in an HDF5 file, with the file path specified in the problem [YAML file](@ref YAML_file). The HDF5 parameter file is expected to have the following structure for an arbitrary number of layers:
+Parameter values of frozen or pre-trained layers, or post-calibration parameter values, are stored in the HDF5 format, and included in the problem via the problem [YAML file](@ref YAML_file). The HDF5 file should contain a list of entries, where each entry specifies the parameter values for a single layer. Each parameter value includes the name of the parameter as well, e.g. `weight` for the weight matrix parameter of a PyTorch Linear module (`framework_parameter_name`).
 
+Below is an example.
 ```hdf5
-parameters.hdf5
-└───layerId0 (group)
-│   ├── arrayId0
-│   └── arrayId1
-└───layerId1 (group)
-    ├── arrayId0
-    └── arrayId1
+parameters.hdf5                    # arbitrary filename
+├── layerId1                       # a layer ID
+│   ├─┬─ framework_parameter_name  # reserved keyword (string)
+│   │ └─ value                     # reserved keyword (tensor)
+│   ├─┬─ framework_parameter_name
+│   │ └─ value
+│   └─── ...
+├── layerId2
+│   └─── ...
+└── ...
 ```
 
 The schema is provided as [JSON schema](assets/parameter_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
@@ -62,31 +66,31 @@ The indexing convention and naming for `arrayId` depend on the neural network mo
 
 ### [Neural Network Input Data](@id hdf5_input_structure)
 
-Data for ML models are specified in the HDF5 format. The HDF5 file should contain a list of entries, where each entry specifies an input ID and the datasets for that input ID. Each dataset is the data itself, and optionally the experiment IDs that the data applies to. If no experiment IDs are specified, then the dataset will be utilized in all experiments. A single input cannot be assigned multiple datasets for the same experiment.
+Input data for ML models are specified in the HDF5 format. The HDF5 file should contain a list of entries, where each entry specifies an input ID and the datasets for that input ID. Each dataset is the data itself, and optionally the experiment IDs that the data applies to. If no experiment IDs are specified, then the dataset will be utilized in all experiments. A single input cannot be assigned multiple datasets for the same experiment.
 
 Below is an example.
 ```
 input.hdf5                       # arbitrary filename
 ├─┬─ inputId1                    # an input ID
-│ └─ datasets                    # reserved keyword
-│    ├─┬─ experiment_ids          # reserved keyword
-│    │ │  ├── experimentId1       # an arbitrary number of PEtab experiment IDs
+│ └─ datasets                    # reserved keyword (group)
+│    ├─┬─ experiment_ids         # reserved keyword (list of string)
+│    │ │  ├── experimentId1      # an arbitrary number of PEtab experiment IDs
 │    │ │  ├── experimentId2
 │    │ │  └── ...
-│    │ └── data                  # reserved keyword. The tensor.
+│    │ └─ data                   # reserved keyword (tensor)
 │    ├─┬─ experiment_ids
 │    │ │  ├── experimentId3
 │    │ │  ├── experimentId4
 │    │ │  └── ...
-│    │ └── data
+│    │ └─ data
 │    └─── ...
 ├─┬─ inputId2
-│ └─ datasets
+│ └─ ...
 │    ├─┬─ experiment_ids
 │    │ │  ├── experimentId1
 │    │ │  ├── experimentId2
 │    │ │  └── ...
-│    │ └── data
+│    │ └─ data
 │    └─── ...
 └─── ...
 ```
