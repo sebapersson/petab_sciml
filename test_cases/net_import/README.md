@@ -1,8 +1,0 @@
-## Neural-network tests
-
-The neural networks test different layers and activation functions. Important to consider for implementations is the `flatten` operation. By default, PyTorch flattens following a column-major ordering. For languages storing in row-major order, this should be respected to avoid non-reproducible results across flattening calls. This raises the question of the best way to handle this. The simplest and likely the most efficient approach, as it respects how arrays are stored in memory, is to transform the input data. For example, in PyTorch, image dimensions should be provided in the form `(C, W, H)`, while in Julia, it should be stored as `(H, W, C)`. If, during neural net import into Julia, the input data and the convolutional kernels (and similar layers) are transformed to respect the Julia format, the resulting output will be consistent following flattening. See, for example, test case `net_018`.
-
-For each case, it is tested that the neural network computes the correct output given an input and a specified parameter weight table, for three different random input combinations. When building the tests, consistency is tested between Lux.jl and PyTorch. The following layers and activation functions are currently supported in the standard:
-
-* **Layers**: `Conv1-3d`, `ConvTranspose1-3d`, `AvgPool1-3d`, `MaxPool1-3d`, `LPPool1-3d`, `AdaptiveMaxPool1-3d`, `AdaptiveMeanPool1-3d`, `BatchNorm1-3d`, `InstanceNorm1-3d`, `LayerNorm`, `Dropout1-3d`, `Dropout`, `AlphaDropout`, `Linear`, `Bilinear` and `Flatten`.
-* **Activation**: `relu`, `relu6`, `hardtanh`, `hardswish`, `selu`, `leaky_relu`, `gelu`, `logsigmoid`, `tanhshrink`, `softsign`, `softplus`, `tanh`, `sigmoid`, `hardsigmoid`, `mish`, `elu`, `celu`, `softmax` and `log_softmax`.

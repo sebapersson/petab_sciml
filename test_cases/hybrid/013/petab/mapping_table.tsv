@@ -1,7 +1,0 @@
-petabEntityId	modelEntityId
-prey	net1.input1
-predator	net1.input2
-gamma	net1.output1
-alpha	net2.input1
-predator	net2.input2
-net2_output1	net2.output1
