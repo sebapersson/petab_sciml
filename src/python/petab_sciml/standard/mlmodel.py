@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from mkstd import YamlStandard
 
 
-__all__ = ["Input", "Layer", "Node", "MLModel", "PetabScimlStandard"]
+__all__ = ["Input", "Layer", "Node", "MLModel", "MLModelStandard"]
 
 
 class Input(BaseModel):
@@ -285,11 +285,11 @@ class MLModel(BaseModel):
         return torch.fx.GraphModule(_PytorchModule(), graph)
 
 
-PetabScimlStandard = YamlStandard(model=MLModel)
+MLModelStandard = YamlStandard(model=MLModel)
 
 
 if __name__ == "__main__":
     from pathlib import Path
 
 
-    PetabScimlStandard.save_schema(Path(__file__).resolve().parents[3] / "docs" / "src" / "assets" / "net_schema.yaml")
+    MLModelStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "mlmodel_schema.yaml")
