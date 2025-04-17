@@ -7,7 +7,8 @@ $defs:
         type: string
       transform:
         anyOf:
-        - type: object
+        - additionalProperties: true
+          type: object
         - type: 'null'
         default: null
         title: Transform
@@ -26,7 +27,8 @@ $defs:
         type: string
       args:
         anyOf:
-        - type: object
+        - additionalProperties: true
+          type: object
         - type: 'null'
         default: null
         title: Args
@@ -92,7 +94,8 @@ $defs:
         title: Args
       kwargs:
         anyOf:
-        - type: object
+        - additionalProperties: true
+          type: object
         - type: 'null'
         default: null
         title: Kwargs
