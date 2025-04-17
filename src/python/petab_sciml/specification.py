@@ -285,13 +285,11 @@ class MLModel(BaseModel):
         return torch.fx.GraphModule(_PytorchModule(), graph)
 
 
-class MLModels(BaseModel):
-    """Specify all ML models of your hybrid model."""
+PetabScimlStandard = YamlStandard(model=MLModel)
 
-    models: list[MLModel]
-
-
-PetabScimlStandard = YamlStandard(model=MLModels)
 
 if __name__ == "__main__":
-    PetabScimlStandard.save_schema("standard/schema.yaml")
+    from pathlib import Path
+
+
+    PetabScimlStandard.save_schema(Path(__file__).resolve().parents[3] / "docs" / "src" / "assets" / "net_schema.yaml")

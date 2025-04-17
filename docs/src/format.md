@@ -26,7 +26,10 @@ A PEtab SciML problem can also include multiple neural networks. Aside from ensu
 
 ## [Neural Network Model Format](@id net_format)
 
-The neural network model format is flexible, meaning models can be provided in any format compatible with the PEtab SciML specification (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library provides a neural network YAML file format that can be imported by tools across various programming languages. This format flexibility exists because, although the YAML format can accommodate many architectures, some may still be difficult to represent. However, the YAML format is recommended whenever possible to facilitate model exchange.
+The neural network model format is flexible, meaning models can be provided in any format compatible with the PEtab SciML specification (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library provides a neural network YAML file format that can be imported by tools across various programming languages.
+
+!!! tip "For everyone: Use the YAML network format for interoperability"
+    The network specification format in PEtab SciML is flexible, to ensure all architectures can be used. However, where possible, the YAML network file format should be used, to facilitate model exchange.
 
 A neural network model must consist of two parts to be compatible with the PEtab SciML specification:
 
@@ -77,9 +80,10 @@ TODO: We will fix condition specific input in the YAML file later.
 
 ### [YAML Network file format](@id YAML_net_format)
 
-The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. While YAML network files can be written manually, it is recommended approach to define a PyTorch `nn.Module` and use the `petab_sciml` library to automatically generate the YAML representation (see tutorials).
+The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. The schema is provided as [YAML-formatted JSON schema](assets/net_schema.yaml), which enables easy validation with various third-party tools.
 
-TODO: Add scheme in future PR.
+!!! tip "For users: Define models in PyTorch"
+    The recommended approach to create a YAML network file is to first define a PyTorch model (`torch.nn.Module`) and use the Python `petab_sciml` library to export this to the YAML format. See the tutorials for examples of this.
 
 ## [Mapping Table](@id mapping_table)
 
