@@ -1,0 +1,5 @@
+netId	ioId	ioValue
+net1	input1	prey
+net1	input2	predator
+net1	output1	prey_predation
+net1	output2	predator_predation

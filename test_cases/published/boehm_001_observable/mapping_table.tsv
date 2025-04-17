@@ -1,0 +1,10 @@
+netId	ioId	ioValue
+net1	input1	STAT5A
+net1	input2	STAT5B
+net1	input3	pApA
+net1	input4	pApB
+net1	input5	pBpB
+net1	input6	nucpApA
+net1	input7	nucpApB
+net1	input8	nucpBpB
+net1	output1	net1_output1
