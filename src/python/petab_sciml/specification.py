@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from mkstd import YamlStandard
 
 
-__all__ = ["Input", "Layer", "Node", "MLModel", "MLModels", "PetabScimlStandard"]
+__all__ = ["Input", "Layer", "Node", "MLModel", "PetabScimlStandard"]
 
 
 class Input(BaseModel):
