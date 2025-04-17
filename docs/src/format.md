@@ -26,7 +26,10 @@ A PEtab SciML problem can also include multiple neural networks. Aside from ensu
 
 ## [Neural Network Model Format](@id net_format)
 
-The neural network model format is flexible, meaning models can be provided in any format compatible with the PEtab SciML specification (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library provides a neural network YAML file format that can be imported by tools across various programming languages. This format flexibility exists because, although the YAML format can accommodate many architectures, some may still be difficult to represent. However, the YAML format is recommended whenever possible to facilitate model exchange.
+The neural network model format is flexible, meaning models can be provided in any format compatible with the PEtab SciML specification (for example, [Lux.jl](https://github.com/LuxDL/Lux.jl) in [PEtab.jl](https://github.com/sebapersson/PEtab.jl)). Additionally, the `petab_sciml` library provides a neural network YAML file format that can be imported by tools across various programming languages.
+
+!!! tip "For everyone: Use the YAML network format for interoperability"
+    The network specification format in PEtab SciML is flexible, to ensure all architectures can be used. However, where possible, the YAML network file format should be used, to facilitate model exchange.
 
 A neural network model must consist of two parts to be compatible with the PEtab SciML specification:
 
