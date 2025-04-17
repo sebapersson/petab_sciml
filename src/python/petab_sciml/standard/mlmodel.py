@@ -8,7 +8,7 @@ import torch.fx
 import torch.nn as nn
 from pydantic import BaseModel, Field
 
-from mkstd import YamlStandard
+from mkstd import JsonStandard
 
 
 __all__ = ["Input", "Layer", "Node", "MLModel", "MLModelStandard"]
@@ -285,11 +285,11 @@ class MLModel(BaseModel):
         return torch.fx.GraphModule(_PytorchModule(), graph)
 
 
-MLModelStandard = YamlStandard(model=MLModel)
+MLModelStandard = JsonStandard(model=MLModel)
 
 
 if __name__ == "__main__":
     from pathlib import Path
 
 
-    MLModelStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "mlmodel_schema.yaml")
+    MLModelStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "mlmodel_schema.json")

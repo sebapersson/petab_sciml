@@ -58,4 +58,4 @@ if __name__ == "__main__":
     from pathlib import Path
 
 
-    ParameterValuesStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "parameter_values_schema.yaml")
+    ParameterValuesStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "parameter_values_schema.json")

@@ -53,4 +53,4 @@ if __name__ == "__main__":
     from pathlib import Path
 
 
-    InputDataHdf5Standard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "input_data_schema.yaml")
+    InputDataHdf5Standard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "input_data_schema.json")
