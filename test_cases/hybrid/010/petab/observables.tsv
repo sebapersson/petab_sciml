@@ -1,3 +1,0 @@
-observableId	observableName	observableFormula	noiseFormula	observableTransformation	noiseDistribution
-prey_o		net1_output1	0.05	lin	normal
-predator_o		net2_output1	0.05	lin	normal
