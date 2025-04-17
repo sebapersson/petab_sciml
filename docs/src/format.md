@@ -36,19 +36,25 @@ A neural network model must consist of two parts to be compatible with the PEtab
 - **layers**: Defines the network layers, each with a unique identifier.
 - **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n-1}`. Similar holds for the output. Aside from the neural network output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
 
-### [Neural Network Parameters](@id hdf5_ps_structure)
+### [Neural Network Parameter Values](@id hdf5_ps_structure)
 
-All parameters for a neural network model are stored in an HDF5 file, with the file path specified in the problem [YAML file](@ref YAML_file). The HDF5 parameter file is expected to have the following structure for an arbitrary number of layers:
+Parameter values of frozen or pre-trained layers, or post-calibration parameter values, are stored in the HDF5 format, and included in the problem via the problem [YAML file](@ref YAML_file). The HDF5 file should contain a list of entries, where each entry specifies the parameter values for a single layer. Each parameter value includes the name of the parameter as well, e.g. `weight` for the weight matrix parameter of a PyTorch Linear module (`framework_parameter_name`).
 
+Below is an example.
 ```hdf5
-parameters.hdf5
-└───layerId0 (group)
-│   ├── arrayId0
-│   └── arrayId1
-└───layerId1 (group)
-    ├── arrayId0
-    └── arrayId1
+parameters.hdf5                    # arbitrary filename
+├── layerId1                       # a layer ID
+│   ├─┬─ framework_parameter_name  # reserved keyword (string)
+│   │ └─ value                     # reserved keyword (tensor)
+│   ├─┬─ framework_parameter_name
+│   │ └─ value
+│   └─── ...
+├── layerId2
+│   └─── ...
+└── ...
 ```
+
+The schema is provided as [JSON schema](assets/parameter_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
 
 The indexing convention and naming for `arrayId` depend on the neural network model library:
 
@@ -58,15 +64,38 @@ The indexing convention and naming for `arrayId` depend on the neural network mo
 !!! tip "For developers: Allow export of parameters in PEtab SciML format"
     If the neural network is not provided in the YAML format, exchange of network parameters between software is not possible. To facilitate exchange, it is recommended that tools supporting PEtab SciML implement a function capable of exporting to the PEtab SciML format if all layers in the neural network correspond to layers supported by the PEtab SciML YAML neural network format.
 
-### [Neural Network Input](@id hdf5_input_structure)
+### [Neural Network Input Data](@id hdf5_input_structure)
 
-Potential neural network input files are expected to have the following format:
+Input data for ML models are specified in the HDF5 format. The HDF5 file should contain a list of entries, where each entry specifies an input ID and the datasets for that input ID. Each dataset is the data itself, and optionally the experiment IDs that the data applies to. If no experiment IDs are specified, then the dataset will be utilized in all experiments. A single input cannot be assigned multiple datasets for the same experiment.
 
-```hdf5
-input.hdf5
-└───input (group)
-    └─── input_array
+Below is an example.
 ```
+input.hdf5                       # arbitrary filename
+├─┬─ inputId1                    # an input ID
+│ └─ datasets                    # reserved keyword (group)
+│    ├─┬─ experiment_ids         # reserved keyword (list of string)
+│    │ │  ├── experimentId1      # an arbitrary number of PEtab experiment IDs
+│    │ │  ├── experimentId2
+│    │ │  └── ...
+│    │ └─ data                   # reserved keyword (tensor)
+│    ├─┬─ experiment_ids
+│    │ │  ├── experimentId3
+│    │ │  ├── experimentId4
+│    │ │  └── ...
+│    │ └─ data
+│    └─── ...
+├─┬─ inputId2
+│ └─ ...
+│    ├─┬─ experiment_ids
+│    │ │  ├── experimentId1
+│    │ │  ├── experimentId2
+│    │ │  └── ...
+│    │ └─ data
+│    └─── ...
+└─── ...
+```
+
+The schema is provided as [JSON schema](assets/input_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
 
 As with [parameters](@ref hdf5_ps_structure), the indexing depends on the neural network library:
 
@@ -76,11 +105,9 @@ As with [parameters](@ref hdf5_ps_structure), the indexing depends on the neural
 !!! tip "For developers: Respect memory order"
     Tools supporting the SciML extension should, for computational efficiency, reorder input data and potential layer parameter arrays to match the memory ordering of the target language. For example, PEtab.jl converts input data to follow Julia based indexing.
 
-TODO: We will fix condition specific input in the YAML file later.
-
 ### [YAML Network file format](@id YAML_net_format)
 
-The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. The schema is provided as [YAML-formatted JSON schema](assets/net_schema.yaml), which enables easy validation with various third-party tools.
+The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. The schema is provided as [JSON schema](assets/mlmodel_schema.json), which enables easy validation with various third-party tools.
 
 !!! tip "For users: Define models in PyTorch"
     The recommended approach to create a YAML network file is to first define a PyTorch model (`torch.nn.Module`) and use the Python `petab_sciml` library to export this to the YAML format. See the tutorials for examples of this.
@@ -101,7 +128,7 @@ The model Id `$netId.parameters[$layerId].{[$arrayId]{[$parameterIndex]}}` refer
 - `$arrayId`: The parameter array name specific to that layer (e.g., `weight`).
 - `$parameterIndex`: The indexing into the parameter array ([syntax](@ref mapping_table_indexing)).
 
-Neural network parameter PEtab identifiers can only be referenced in the  parameters table.
+Neural network parameter PEtab identifiers can only be referenced in the parameters table.
 
 #### Inputs
 

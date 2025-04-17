@@ -1,0 +1,77 @@
+{
+    "$defs": {
+        "Data": {
+            "description": "A dataset.",
+            "properties": {
+                "condition_ids": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Condition Ids"
+                },
+                "data": {
+                    "anyOf": [
+                        {
+                            "type": "array"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Data"
+                }
+            },
+            "required": [
+                "data"
+            ],
+            "title": "Data",
+            "type": "object"
+        },
+        "SingleInputData": {
+            "description": "Datasets for an input.",
+            "properties": {
+                "input_id": {
+                    "title": "Input Id",
+                    "type": "string"
+                },
+                "datasets": {
+                    "items": {
+                        "$ref": "#/$defs/Data"
+                    },
+                    "title": "Datasets",
+                    "type": "array"
+                }
+            },
+            "required": [
+                "input_id",
+                "datasets"
+            ],
+            "title": "SingleInputData",
+            "type": "object"
+        }
+    },
+    "description": "Datasets for inputs.",
+    "properties": {
+        "root": {
+            "items": {
+                "$ref": "#/$defs/SingleInputData"
+            },
+            "title": "Root",
+            "type": "array"
+        }
+    },
+    "required": [
+        "root"
+    ],
+    "title": "InputData",
+    "type": "object"
+}
