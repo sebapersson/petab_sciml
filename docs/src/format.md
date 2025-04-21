@@ -107,7 +107,7 @@ As with [parameters](@ref hdf5_ps_structure), the indexing depends on the neural
 
 ### [YAML Network file format](@id YAML_net_format)
 
-The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. The schema is provided as [JSON schema](assets/mlmodel_schema.json), which enables easy validation with various third-party tools.
+The `petab_sciml` library provides a YAML neural network file format for model exchange. The YAML format follows PyTorch conventions for layer names and arguments. The schema is provided as [JSON schema](assets/mlmodel_schema.json), which enables validation with various third-party tools.
 
 !!! tip "For users: Define models in PyTorch"
     The recommended approach to create a YAML network file is to first define a PyTorch model (`torch.nn.Module`) and use the Python `petab_sciml` library to export this to the YAML format. See the tutorials for examples of this.
