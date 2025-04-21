@@ -66,7 +66,7 @@ The indexing convention and naming for `framework_parameter_name` depend on the 
 
 ### [Neural Network Input Data](@id hdf5_input_structure)
 
-Input data for ML models are specified in the HDF5 format. The HDF5 file should contain a list of entries, where each entry specifies an input ID and the datasets for that input ID. Each dataset is the data itself, and optionally the experiment IDs that the data applies to. If no experiment IDs are specified, then the dataset will be utilized in all experiments. A single input cannot be assigned multiple datasets for the same experiment.
+Array input data for neural network models is specified in HDF5 format. Each HDF5 file should contain a list of entries, with each entry defining an input Id and its associated datasets. Each dataset consists of the data array and, optionally, the experiment Ids to which it applies. If no experiment Ids are provided, the dataset will be applied to all experiments. Multiple datasets may not be assigned to the same input for a single experimental condition.
 
 Below is an example.
 ```
