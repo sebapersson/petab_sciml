@@ -38,7 +38,7 @@ A neural network model must consist of two parts to be compatible with the PEtab
 
 ### [Neural Network Parameter Values](@id hdf5_ps_structure)
 
-Parameter values for frozen or pre‑trained layers and post‑calibration parameters are stored in HDF5 format and and included in the problem via the [YAML file](@ref YAML_file). The HDF5 file must contain a list of entries, each representing a single layer. For each layer, the parameter array identifier(s) (e.g., `weight` and optionally `bias` for a PyTorch `Linear` layer) and their values must be provided.
+Parameter values for frozen or pre‑trained layers, and post‑calibration parameters, are stored in HDF5 format and are included in the problem via the [YAML file](@ref YAML_file). The HDF5 file must contain a list of entries, each representing a single layer. For each layer, the parameter array identifier(s) (e.g., `weight` and/or `bias` for a PyTorch `Linear` layer) and their values must be provided.
 
 Below is an example.
 ```hdf5
@@ -56,9 +56,9 @@ parameters.hdf5                    # arbitrary filename
 
 The schema is provided as [JSON schema](assets/parameter_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
 
-The indexing convention and naming for `framework_parameter_name` depend on the neural network model library:
+The indexing convention and naming for `framework_parameter_name` depends on the neural network model library:
 
-- Neural network models in the PEtab SciML [YAML format](@ref YAML_net_format) follow PyTorch indexing and naming conventions. For example, in a PyTorch `linear` layer, the arrays ids are `weight` and (optionally) `bias`
+- Neural network models in the PEtab SciML [YAML format](@ref YAML_net_format) follow PyTorch indexing and naming conventions. For example, in a PyTorch `Linear` layer, the arrays Ids are `weight` and/or `bias`
 - Neural network models in other formats follow the indexing and naming conventions of the respective package and programming language.
 
 !!! tip "For developers: Allow export of parameters in PEtab SciML format"
@@ -66,7 +66,7 @@ The indexing convention and naming for `framework_parameter_name` depend on the 
 
 ### [Neural Network Input Data](@id hdf5_input_structure)
 
-Array input data for neural network models is specified in HDF5 format. Each HDF5 file should contain a list of entries, with each entry defining an input Id and its associated datasets. Each dataset consists of the data array and, optionally, the experiment Ids to which it applies. If no experiment Ids are provided, the dataset will be applied to all experiments. Multiple datasets may not be assigned to the same input for a single experimental condition.
+Array input data for neural network models is specified in HDF5 format. Each HDF5 file should contain a list of entries, where each entry associates an input Id with datasets. Each dataset consists of the data array and, optionally, the experiment Ids to which it applies. If no experiment Ids are provided, the dataset will be applied to all experiments. Multiple datasets may not be assigned to the same input for a single experiment.
 
 Below is an example.
 ```
