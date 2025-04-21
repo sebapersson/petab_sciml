@@ -38,7 +38,7 @@ A neural network model must consist of two parts to be compatible with the PEtab
 
 ### [Neural Network Parameter Values](@id hdf5_ps_structure)
 
-Parameter values of frozen or pre-trained layers, or post-calibration parameter values, are stored in the HDF5 format, and included in the problem via the problem [YAML file](@ref YAML_file). The HDF5 file should contain a list of entries, where each entry specifies the parameter values for a single layer. Each parameter value includes the name of the parameter as well, e.g. `weight` for the weight matrix parameter of a PyTorch Linear module (`framework_parameter_name`).
+Parameter values for frozen or pre‑trained layers and post‑calibration parameters are stored in HDF5 format and and included in the problem via the [YAML file](@ref YAML_file). The HDF5 file must contain a list of entries, each representing a single layer. For each layer, the parameter array identifier(s) (e.g., `weight` and optionally `bias` for a PyTorch `Linear` layer) and their values must be provided.
 
 Below is an example.
 ```hdf5
