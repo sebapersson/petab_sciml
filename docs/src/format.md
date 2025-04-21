@@ -56,7 +56,7 @@ parameters.hdf5                    # arbitrary filename
 
 The schema is provided as [JSON schema](assets/parameter_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
 
-The indexing convention and naming for `arrayId` depend on the neural network model library:
+The indexing convention and naming for `framework_parameter_name` depend on the neural network model library:
 
 - Neural network models in the PEtab SciML [YAML format](@ref YAML_net_format) follow PyTorch indexing and naming conventions. For example, in a PyTorch `linear` layer, the arrays ids are `weight` and (optionally) `bias`
 - Neural network models in other formats follow the indexing and naming conventions of the respective package and programming language.
