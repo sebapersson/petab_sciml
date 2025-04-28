@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from mkstd import JsonStandard
 
 
-__all__ = ["Input", "Layer", "Node", "MLModel", "MLModelStandard"]
+__all__ = ["Input", "Layer", "Node", "NNModel", "NNModelStandard"]
 
 
 class Input(BaseModel):
@@ -173,13 +173,13 @@ def get_module_layer_type(module: nn.Module) -> str:
     return type(module).__name__
 
 
-class MLModel(BaseModel):
-    """An easy-to-use format to specify simple deep ML models.
+class NNModel(BaseModel):
+    """An easy-to-use format to specify simple deep NN models.
 
     There is a function to export this to a PyTorch module, or to YAML.
     """
 
-    mlmodel_id: str
+    nn_model_id: str
 
     inputs: list[Input]
 
@@ -190,9 +190,9 @@ class MLModel(BaseModel):
 
     @staticmethod
     def from_pytorch_module(
-        module: nn.Module, mlmodel_id: str, inputs: list[Input]
-    ) -> MLModel:
-        """Create a PEtab SciML ML model from a pytorch module."""
+        module: nn.Module, nn_model_id: str, inputs: list[Input]
+    ) -> NNModel:
+        """Create a PEtab SciML NN model from a pytorch module."""
         layers = []
         layer_ids = []
         for layer_id, layer_module in module.named_modules():
@@ -228,13 +228,13 @@ class MLModel(BaseModel):
             nodes.append(node)
             node_names.append(node.name)
 
-        mlmodel = MLModel(
-            mlmodel_id=mlmodel_id, inputs=inputs, layers=layers, forward=nodes
+        nn_model = NNModel(
+            nn_model_id=nn_model_id, inputs=inputs, layers=layers, forward=nodes
         )
-        return mlmodel
+        return nn_model
 
     def to_pytorch_module(self) -> nn.Module:
-        """Create a pytorch module from a PEtab SciML ML model."""
+        """Create a pytorch module from a PEtab SciML NN model."""
         self2 = self
 
         class _PytorchModule(nn.Module):
@@ -285,11 +285,11 @@ class MLModel(BaseModel):
         return torch.fx.GraphModule(_PytorchModule(), graph)
 
 
-MLModelStandard = JsonStandard(model=MLModel)
+NNModelStandard = JsonStandard(model=NNModel)
 
 
 if __name__ == "__main__":
     from pathlib import Path
 
 
-    MLModelStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "mlmodel_schema.json")
+    NNModelStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "nn_model_schema.json")
