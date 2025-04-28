@@ -40,21 +40,26 @@ A NN model must consist of two parts to be compatible with the PEtab SciML speci
 
 Parameter values for frozen or pre‑trained layers, and post‑calibration parameters, are stored in HDF5 format and are included in the problem via the [YAML file](@ref YAML_file). The HDF5 file must contain a list of entries, each representing a single layer. For each layer, the parameter array identifier(s) (e.g., `weight` and/or `bias` for a PyTorch `Linear` layer) and their values must be provided.
 
+Additional there is a `perm` field, which specifies whether the arrays in the HDF5 file are stored in row-major or column-major format.
+
 Below is an example.
 ```hdf5
 parameters.hdf5                    # arbitrary filename
-├── layerId1                       # a layer ID
-│   ├─┬─ framework_parameter_name  # reserved keyword (string)
-│   │ └─ value                     # reserved keyword (tensor)
-│   ├─┬─ framework_parameter_name
-│   │ └─ value
-│   └─── ...
-├── layerId2
-│   └─── ...
-└── ...
+├ metadata
+│ └── perm                         # reserved keyword (str). "row" for row-major, "column" for column-major
+└ layers
+  ├── layerId1                       # a layer ID
+  │   ├─┬─ framework_parameter_name  # reserved keyword (string)
+  │   │ └─ value                     # reserved keyword (tensor)
+  │   ├─┬─ framework_parameter_name
+  │   │ └─ value
+  │   └─── ...
+  ├── layerId2
+  │   └─── ...
+  └── ...
 ```
 
-The schema is provided as [JSON schema](assets/parameter_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
+The schema is provided as [JSON schema](assets/parameter_values_schema.json). Currently, validation is only provided via the PEtab SciML library.
 
 The indexing convention and naming for `framework_parameter_name` depends on the NN model library:
 
@@ -66,33 +71,39 @@ The indexing convention and naming for `framework_parameter_name` depends on the
 
 ### [NN Input Data](@id hdf5_input_structure)
 
-Array input data for NN models is specified in HDF5 format. Each HDF5 file should contain a list of entries, where each entry associates an input Id with datasets. Each dataset consists of the data array and, optionally, the experiment Ids to which it applies. If no experiment Ids are provided, the dataset will be applied to all experiments. Multiple datasets may not be assigned to the same input for a single experiment.
+Array input data for NN models is specified in HDF5 format. Each HDF5 file should contain a list of entries, where each entry associates an input Id with datasets. Each dataset consists of the data array and, optionally, the condition Ids to which it applies.
 
-Below is an example.
+The input data for all NN inputs for all relevant conditions (conditions that involve NN output) must be specified exactly once somewhere in the PEtab SciML problem, i.e., in either the hybridization table, condition table, or these input data HDF5 files that are included via the problem YAML.
+
+If no condition Ids are specified in the input data file for some input `inputId1`, this means that the input data is applied to all relevant conditions. Hence, values for `inputId1` cannot be specified anywhere else in the PEtab SciML problem.
+
+Alternatively, another input `inputId2` may have input data specified for some relevant conditions. The input data for the other relevant conditions must be specified in additional input data files or the condition table.
+
+Additional there is a `perm` field, which specifies whether the arrays in the HDF5 file are stored in row-major or column-major format.
+
+Below is an example, involving the two exemplary inputs `inputId1` and `inputId2` described above.
 ```
-input.hdf5                       # arbitrary filename
-├─┬─ inputId1                    # an input ID
-│ └─ datasets                    # reserved keyword (group)
-│    ├─┬─ experiment_ids         # reserved keyword (list of string)
-│    │ │  ├── experimentId1      # an arbitrary number of PEtab experiment IDs
-│    │ │  ├── experimentId2
-│    │ │  └── ...
-│    │ └─ data                   # reserved keyword (tensor)
-│    ├─┬─ experiment_ids
-│    │ │  ├── experimentId3
-│    │ │  ├── experimentId4
-│    │ │  └── ...
-│    │ └─ data
-│    └─── ...
-├─┬─ inputId2
-│ └─ ...
-│    ├─┬─ experiment_ids
-│    │ │  ├── experimentId1
-│    │ │  ├── experimentId2
-│    │ │  └── ...
-│    │ └─ data
-│    └─── ...
-└─── ...
+input.hdf5                         # arbitrary filename
+├ metadata
+│ └── perm                         # reserved keyword (str). "row" for row-major, "column" for column-major arrays
+└ inputs
+  ├─┬─ inputId1                    # an input Id
+  │ └─ datasets                    # reserved keyword (group)
+  │    └─ data                     # reserved keyword (tensor)
+  ├─┬─ inputId2
+  │ └─ datasets
+  │    ├─┬─ condition_ids          # reserved keyword (optional list of string)
+  │    │ │  ├── conditionId1       # an arbitrary number of PEtab condition IDs
+  │    │ │  ├── conditionId2
+  │    │ │  └── ...
+  │    │ └─ data
+  │    ├─┬─ condition_ids          # inputId2 has condition-specific input data
+  │    │ │  ├── conditionId3
+  │    │ │  ├── conditionId4
+  │    │ │  └── ...
+  │    │ └─ data
+  │    └─── ...
+  └─── ...
 ```
 
 The schema is provided as [JSON schema](assets/input_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
@@ -107,7 +118,7 @@ As with [parameters](@ref hdf5_ps_structure), the indexing depends on the NN lib
 
 ### [NN model YAML format](@id NN_YAML)
 
-The `petab_sciml` library provides a NN model YAML format for model exchange. This format follows PyTorch conventions for layer names and arguments. The schema is provided as [JSON schema](assets/mlmodel_schema.json), which enables validation with various third-party tools.
+The `petab_sciml` library provides a NN model YAML format for model exchange. This format follows PyTorch conventions for layer names and arguments. The schema is provided as [JSON schema](assets/nn_model_schema.json), which enables validation with various third-party tools.
 
 !!! tip "For users: Define models in PyTorch"
     The recommended approach to create a NN model YAML file is to first define a PyTorch model (`torch.nn.Module`) and use the Python `petab_sciml` library to export this to YAML. See the tutorials for examples of this.
