@@ -105,7 +105,7 @@ As with [parameters](@ref hdf5_ps_structure), the indexing depends on the NN lib
 !!! tip "For developers: Respect memory order"
     Tools supporting the SciML extension should, for computational efficiency, reorder input data and potential layer parameter arrays to match the memory ordering of the target language. For example, PEtab.jl converts input data to follow Julia based indexing.
 
-### [YAML Network file format](@id NN_YAML)
+### [NN model YAML format](@id NN_YAML)
 
 The `petab_sciml` library provides a NN model YAML format for model exchange. This format follows PyTorch conventions for layer names and arguments. The schema is provided as [JSON schema](assets/mlmodel_schema.json), which enables validation with various third-party tools.
 
