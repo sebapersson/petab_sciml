@@ -10,6 +10,7 @@ __all__ = [
     "SingleParameterValue",
     "SingleLayerParameterValues",
     "ParameterValues",
+    "ParameterValuesMetadata",
     "ParameterValuesStandard",
 ]
 
@@ -44,11 +45,23 @@ class SingleLayerParameterValues(BaseModel):
     """The values for multiple layer parameters."""
 
 
+class ParameterValuesMetadata(BaseModel):
+    """Input array metadata."""
+
+    perm: Literal["row", "column"]
+    """The order of the dimensions of arrays.
+
+    i.e., row-major or column-major arrays.
+    """
+
+
 class ParameterValues(BaseModel):
     """Parameter values for an ML model."""
 
-    root: list[SingleLayerParameterValues]
-    """The parameter values."""
+    metadata: InputMetadata
+    """Additional metadata for the parameter values."""
+    layers: list[SingleLayerParameterValues]
+    """The parameter values for individual layers."""
 
 
 ParameterValuesStandard = Hdf5Standard(model=ParameterValues)

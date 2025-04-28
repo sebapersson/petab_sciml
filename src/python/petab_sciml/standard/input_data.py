@@ -6,7 +6,13 @@ from mkstd import Hdf5Standard
 from mkstd.types.array import get_array_type
 
 
-__all__ = ["Data", "SingleInputData", "InputData"]
+__all__ = [
+    "Data",
+    "SingleInputData",
+    "InputMetadata",
+    "InputData",
+    "InputDataStandard",
+]
 
 
 class Data(BaseModel):
@@ -39,18 +45,30 @@ class SingleInputData(BaseModel):
     # across all datasets?
 
 
+class InputMetadata(BaseModel):
+    """Input array metadata."""
+
+    perm: Literal["row", "column"]
+    """The order of the dimensions of arrays.
+
+    i.e., row-major or column-major arrays.
+    """
+
+
 class InputData(BaseModel):
     """Datasets for inputs."""
 
-    root: list[SingleInputData]
+    metadata: InputMetadata
+    """Additional metadata for the input data."""
+    inputs: list[SingleInputData]
     """The datasets."""
 
 
-InputDataHdf5Standard = Hdf5Standard(model=InputData)
+InputDataStandard = Hdf5Standard(model=InputData)
 
 
 if __name__ == "__main__":
     from pathlib import Path
 
 
-    InputDataHdf5Standard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "input_data_schema.json")
+    InputDataStandard.save_schema(Path(__file__).resolve().parents[4] / "docs" / "src" / "assets" / "input_data_schema.json")
