@@ -18,9 +18,6 @@ class Input(BaseModel):
     """Specify (transformations of) the input layer."""
 
     input_id: str
-    transform: dict | None = Field(
-        default=None
-    )  # TODO class of supported transforms
 
 
 class Layer(BaseModel):
