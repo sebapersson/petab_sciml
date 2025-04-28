@@ -247,7 +247,7 @@ The parameter table follows the same format as in PEtab version 2, with a subset
 - `nominalValue` [String | NUMERIC, REQUIRED]: NN nominal values. This can be:
   - A PEtab variable that via the problem [YAML file](@ref YAML_file) corresponds to an HDF5 file with the required [structure](@ref hdf5_ps_structure). If no file exists at the given path when the problem is imported and the parameters are set to be estimated, a file is created with randomly sampled values. Unless a numeric value is provided, referring to the same file is required for all assignments for a NN, since all NN parameters should be collected in a single HDF5 file following the structure described [here](@ref hdf5_ps_structure).
   - A numeric value applied to all parameters under `parameterId`.
-- `estimate` [0 | 1, REQUIRED]: Indicates whether the parameters are estimated (`1`) or fixed (`0`). This must be consistent across layers. For example, if `nnId.parameters` has `estimate = 0`, then potential layer rows must also be `0`. In other words, freezing individual NN parameters is not allowed.
+- `estimate` [0 | 1, REQUIRED]: Indicates whether the parameters are estimated (`1`) or fixed (`0`).
 
 ### Bounds for NN parameters
 
