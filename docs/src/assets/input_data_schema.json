@@ -36,6 +36,24 @@
             "title": "Data",
             "type": "object"
         },
+        "InputMetadata": {
+            "description": "Input array metadata.",
+            "properties": {
+                "perm": {
+                    "enum": [
+                        "row",
+                        "column"
+                    ],
+                    "title": "Perm",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "perm"
+            ],
+            "title": "InputMetadata",
+            "type": "object"
+        },
         "SingleInputData": {
             "description": "Datasets for an input.",
             "properties": {
@@ -61,16 +79,20 @@
     },
     "description": "Datasets for inputs.",
     "properties": {
-        "root": {
+        "metadata": {
+            "$ref": "#/$defs/InputMetadata"
+        },
+        "inputs": {
             "items": {
                 "$ref": "#/$defs/SingleInputData"
             },
-            "title": "Root",
+            "title": "Inputs",
             "type": "array"
         }
     },
     "required": [
-        "root"
+        "metadata",
+        "inputs"
     ],
     "title": "InputData",
     "type": "object"

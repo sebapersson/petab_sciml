@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from mkstd import Hdf5Standard
@@ -58,7 +60,7 @@ class ParameterValuesMetadata(BaseModel):
 class ParameterValues(BaseModel):
     """Parameter values for an ML model."""
 
-    metadata: InputMetadata
+    metadata: ParameterValuesMetadata
     """Additional metadata for the parameter values."""
     layers: list[SingleLayerParameterValues]
     """The parameter values for individual layers."""

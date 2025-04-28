@@ -1,7 +1,25 @@
 {
     "$defs": {
+        "ParameterValuesMetadata": {
+            "description": "Input array metadata.",
+            "properties": {
+                "perm": {
+                    "enum": [
+                        "row",
+                        "column"
+                    ],
+                    "title": "Perm",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "perm"
+            ],
+            "title": "ParameterValuesMetadata",
+            "type": "object"
+        },
         "SingleLayerParameterValues": {
-            "description": "The values for the parameters in a single layer.",
+            "description": "The values for the parameters in a single model layer.",
             "properties": {
                 "layer_id": {
                     "title": "Layer Id",
@@ -44,16 +62,20 @@
     },
     "description": "Parameter values for an ML model.",
     "properties": {
-        "root": {
+        "metadata": {
+            "$ref": "#/$defs/ParameterValuesMetadata"
+        },
+        "layers": {
             "items": {
                 "$ref": "#/$defs/SingleLayerParameterValues"
             },
-            "title": "Root",
+            "title": "Layers",
             "type": "array"
         }
     },
     "required": [
-        "root"
+        "metadata",
+        "layers"
     ],
     "title": "ParameterValues",
     "type": "object"

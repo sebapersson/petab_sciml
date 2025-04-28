@@ -6,19 +6,6 @@
                 "input_id": {
                     "title": "Input Id",
                     "type": "string"
-                },
-                "transform": {
-                    "anyOf": [
-                        {
-                            "additionalProperties": true,
-                            "type": "object"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
-                    "default": null,
-                    "title": "Transform"
                 }
             },
             "required": [
@@ -110,10 +97,10 @@
             "type": "object"
         }
     },
-    "description": "An easy-to-use format to specify simple deep ML models.\n\nThere is a function to export this to a PyTorch module, or to YAML file.",
+    "description": "An easy-to-use format to specify simple deep NN models.\n\nThere is a function to export this to a PyTorch module, or to YAML.",
     "properties": {
-        "mlmodel_id": {
-            "title": "Mlmodel Id",
+        "nn_model_id": {
+            "title": "Nn Model Id",
             "type": "string"
         },
         "inputs": {
@@ -139,11 +126,11 @@
         }
     },
     "required": [
-        "mlmodel_id",
+        "nn_model_id",
         "inputs",
         "layers",
         "forward"
     ],
-    "title": "MLModel",
+    "title": "NNModel",
     "type": "object"
 }
