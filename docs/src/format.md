@@ -36,85 +36,53 @@ A NN model must consist of two parts to be compatible with the PEtab SciML speci
 - **layers**: Defines the NN layers, each with a unique identifier.
 - **forward**: A forward pass function that, given input arguments, specifies the order in which layers are called, applies any activation functions, and returns one or several arrays. The forward function can accept more than one input argument (`n > 1`), and in the [mapping table](@ref mapping_table), the forward function's `n`th input argument (ignoring any potential class arguments such as `self`) is referred to as `inputArgumentIndex{n-1}`. Similar holds for the output. Aside from the NN output values, every component that should be visible to other parts of the PEtab SciML problem must be defined elsewhere (e.g., in **layers**).
 
-### [NN Parameter Values](@id hdf5_ps_structure)
+## [Array data](@id hdf5_array)
 
-Parameter values for frozen or pre‑trained layers, and post‑calibration parameters, are stored in HDF5 format and are included in the problem via the [YAML file](@ref YAML_file). The HDF5 file must contain a list of entries, each representing a single layer. For each layer, the parameter array identifier(s) (e.g., `weight` and/or `bias` for a PyTorch `Linear` layer) and their values must be provided.
+The standard PEtab format is unsuitable for incorporating large arrays of values into an estimation problem. This includes the large datasets used to train NNs, or the parameter values of deep NNs.
 
-Additional there is a `perm` field, which specifies whether the arrays in the HDF5 file are stored in row-major or column-major format.
+Hence, we provide a HDF5-based file format to store and incorporate this array data efficiently. The format involves a list of arrays, each of which can optionally be used for a specific subset of conditions. The arrays can optionally be assigned to a specific target within the HDF5 file, or in the NN model YAML file. There is an additional metadata section to specify the array order (i.e., row-major or column-major arrays).
 
-Below is an example.
+The general structure is
 ```hdf5
-parameters.hdf5                    # arbitrary filename
+my_array.hdf5                        # arbitrary filename
 ├ metadata
-│ └── perm                         # reserved keyword (str). "row" for row-major, "column" for column-major
-└ layers
-  ├── layerId1                       # a layer ID
-  │   ├─┬─ framework_parameter_name  # reserved keyword (string)
-  │   │ └─ value                     # reserved keyword (tensor)
-  │   ├─┬─ framework_parameter_name
-  │   │ └─ value
-  │   └─── ...
-  ├── layerId2
-  │   └─── ...
-  └── ...
+│ └── perm                           # reserved keyword (str). "row" for row-major, "column" for column-major
+└ arrays
+  ├─┬─ conditionIds                  # reserved keyword. (optional) The list of applicable conditions.
+  │ ├─ targetId                      # reserved keyword. (optional) The model component that will be assigned this array value.
+  │ └─ targetValue                   # reserved keyword. The tensor.
+  └─ ...
 ```
 
-The schema is provided as [JSON schema](assets/parameter_values_schema.json). Currently, validation is only provided via the PEtab SciML library.
+The schema is provided as [JSON schema](assets/arrays_schema.json). Currently, validation is only provided via the PEtab SciML library.
 
-The indexing convention and naming for `framework_parameter_name` depends on the NN model library:
+There are two ways to specify that the arrays are input data:
 
-- NN models in the PEtab SciML [YAML format](@ref NN_YAML) follow PyTorch indexing and naming conventions. For example, in a PyTorch `Linear` layer, the arrays Ids are `weight` and/or `bias`
-- NN models in other formats follow the indexing and naming conventions of the respective package and programming language.
+- set the `targetId` to an input Id. This could be an input Id from the NN model YAML file, or an Id in the `$nnId.inputs{[$inputArgumentIndex]{[$inputIndex]}}` [format](@ref nn_inputs)
+- omit `targetId` and associate the arrays of a file to a model target elsewhere in the PEtab SciML problem. This can be in the NN model YAML, or the (TODO GH issue #17) mapping table
 
-!!! tip "For developers: Allow export of parameters in PEtab SciML format"
-    If the NN is not provided in the YAML format, exchange of NN parameters between software is not possible. To facilitate exchange, it is recommended that tools supporting PEtab SciML implement a function capable of exporting to the PEtab SciML format if all layers in the NN correspond to layers supported by the PEtab SciML NN model YAML format.
+There are three ways to specify that the arrays are layer parameter values:
 
-### [NN Input Data](@id hdf5_input_structure)
+- set the `targetId` to a fully-qualified parameter name, in the `$nnId.parameters[$layerId].{[$arrayId]{[$parameterIndex]}}` [format](@ref nn_parameters)
+- set the `targetId` to a layer-specific parameter name, such as "weight" for a PyTorch Linear layer. This then needs to be associated to a Linear layer in either in NN model YAML, or the (TODO GH issue #17) mapping table
+- omit `targetId` and associate the arrays of a file to a parameter elsewhere in the PEtab SciML problem. This can be in the NN model YAML `layers` section, or the (TODO GH issue #17) mapping table
 
-Array input data for NN models is specified in HDF5 format. Each HDF5 file should contain a list of entries, where each entry associates an input Id with datasets. Each dataset consists of the data array and, optionally, the condition Ids to which it applies.
-
-The input data for all NN inputs for all relevant conditions (conditions that involve NN output) must be specified exactly once somewhere in the PEtab SciML problem, i.e., in either the hybridization table, condition table, or these input data HDF5 files that are included via the problem YAML.
-
-If no condition Ids are specified in the input data file for some input `inputId1`, this means that the input data is applied to all relevant conditions. Hence, values for `inputId1` cannot be specified anywhere else in the PEtab SciML problem.
-
-Alternatively, another input `inputId2` may have input data specified for some relevant conditions. The input data for the other relevant conditions must be specified in additional input data files or the condition table.
-
-Additional there is a `perm` field, which specifies whether the arrays in the HDF5 file are stored in row-major or column-major format.
-
-Below is an example, involving the two exemplary inputs `inputId1` and `inputId2` described above.
-```
-input.hdf5                         # arbitrary filename
-├ metadata
-│ └── perm                         # reserved keyword (str). "row" for row-major, "column" for column-major arrays
-└ inputs
-  ├─┬─ inputId1                    # an input Id
-  │ └─ datasets                    # reserved keyword (group)
-  │    └─ data                     # reserved keyword (tensor)
-  ├─┬─ inputId2
-  │ └─ datasets
-  │    ├─┬─ condition_ids          # reserved keyword (optional list of string)
-  │    │ │  ├── conditionId1       # an arbitrary number of PEtab condition IDs
-  │    │ │  ├── conditionId2
-  │    │ │  └── ...
-  │    │ └─ data
-  │    ├─┬─ condition_ids          # inputId2 has condition-specific input data
-  │    │ │  ├── conditionId3
-  │    │ │  ├── conditionId4
-  │    │ │  └── ...
-  │    │ └─ data
-  │    └─── ...
-  └─── ...
-```
-
-The schema is provided as [JSON schema](assets/input_data_schema.json). Currently, validation is only provided via the PEtab SciML library.
-
-As with [parameters](@ref hdf5_ps_structure), the indexing depends on the NN library:
+The naming of inputs or layer parameters is framework-specific or user-specified.
+For inputs:
 
 - NN models in the PEtab SciML [YAML format](@ref NN_YAML) follow PyTorch indexing. For example, if the first layer is `Conv2d`, the input should be in `(C, W, H)` format.
 - NN models in other formats follow the indexing and naming conventions of the respective package and programming language.
 
+For parameters:
+
+- NN models in the PEtab SciML [YAML format](@ref NN_YAML) follow PyTorch indexing and naming conventions. For example, in a PyTorch `Linear` layer, the arrays Ids are `weight` and/or `bias`
+- NN models in other formats follow the indexing and naming conventions of the respective package and programming language.
+
 !!! tip "For developers: Respect memory order"
     Tools supporting the SciML extension should, for computational efficiency, reorder input data and potential layer parameter arrays to match the memory ordering of the target language. For example, PEtab.jl converts input data to follow Julia based indexing.
+
+!!! tip "For developers: Allow export of parameters in PEtab SciML format"
+    If the NN is not provided in the YAML format, exchange of NN parameters between software is not possible. To facilitate exchange, it is recommended that tools supporting PEtab SciML implement a function capable of exporting to the PEtab SciML format if all layers in the NN correspond to layers supported by the PEtab SciML NN model YAML format.
 
 ### [NN model YAML format](@id NN_YAML)
 
@@ -131,7 +99,7 @@ All NNs are assigned an identifier in the PEtab problem [YAML](@ref YAML_file) f
 
 A modeling-language-independent syntax which refers to inputs, outputs, and parameters of NNs.
 
-#### Parameters
+#### [Parameters](@id nn_parameters)
 
 The model Id `$nnId.parameters[$layerId].{[$arrayId]{[$parameterIndex]}}` refers to the parameters of a NN identified by `$nnId`.
 
@@ -141,7 +109,7 @@ The model Id `$nnId.parameters[$layerId].{[$arrayId]{[$parameterIndex]}}` refers
 
 NN parameter PEtab identifiers can only be referenced in the parameters table.
 
-#### Inputs
+#### [Inputs](@id nn_inputs)
 
 The model Id `$nnId.inputs{[$inputArgumentIndex]{[$inputIndex]}}` refers to specific inputs of the NN identified by `$nnId`.
 
