@@ -1,9 +1,9 @@
 {
     "$defs": {
-        "Data": {
-            "description": "A dataset.",
+        "Array": {
+            "description": "An array.\n\nFor example, input data, or layer weights.",
             "properties": {
-                "condition_ids": {
+                "conditionIds": {
                     "anyOf": [
                         {
                             "items": {
@@ -16,9 +16,21 @@
                         }
                     ],
                     "default": null,
-                    "title": "Condition Ids"
+                    "title": "Conditionids"
                 },
-                "data": {
+                "targetId": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Targetid"
+                },
+                "targetValue": {
                     "anyOf": [
                         {
                             "type": "array"
@@ -27,17 +39,17 @@
                             "type": "string"
                         }
                     ],
-                    "title": "Data"
+                    "title": "Targetvalue"
                 }
             },
             "required": [
-                "data"
+                "targetValue"
             ],
-            "title": "Data",
+            "title": "Array",
             "type": "object"
         },
-        "InputMetadata": {
-            "description": "Input array metadata.",
+        "Metadata": {
+            "description": "Metadata for array(s).",
             "properties": {
                 "perm": {
                     "enum": [
@@ -51,49 +63,27 @@
             "required": [
                 "perm"
             ],
-            "title": "InputMetadata",
-            "type": "object"
-        },
-        "SingleInputData": {
-            "description": "Datasets for an input.",
-            "properties": {
-                "input_id": {
-                    "title": "Input Id",
-                    "type": "string"
-                },
-                "datasets": {
-                    "items": {
-                        "$ref": "#/$defs/Data"
-                    },
-                    "title": "Datasets",
-                    "type": "array"
-                }
-            },
-            "required": [
-                "input_id",
-                "datasets"
-            ],
-            "title": "SingleInputData",
+            "title": "Metadata",
             "type": "object"
         }
     },
-    "description": "Datasets for inputs.",
+    "description": "Multiple arrays.\n\nFor example, data for different inputs for different conditions,\nor values for different parameters of different layers.",
     "properties": {
         "metadata": {
-            "$ref": "#/$defs/InputMetadata"
+            "$ref": "#/$defs/Metadata"
         },
-        "inputs": {
+        "arrays": {
             "items": {
-                "$ref": "#/$defs/SingleInputData"
+                "$ref": "#/$defs/Array"
             },
-            "title": "Inputs",
+            "title": "Arrays",
             "type": "array"
         }
     },
     "required": [
         "metadata",
-        "inputs"
+        "arrays"
     ],
-    "title": "InputData",
+    "title": "Arrays",
     "type": "object"
 }
