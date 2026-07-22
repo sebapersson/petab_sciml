@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field
 
 from mkstd import YamlStandard
 
+from petab_sciml.constants import SUPPORTED_TENSOR_OPS
+
 # For PyTorch import/export support
 try:
     import torch.fx
@@ -318,7 +320,7 @@ class NNModel(BaseModel):
                 case "placeholder":
                     state[node.name] = graph.placeholder(node.target)
                 case "call_function":
-                    if node.target in ["flatten", "cat"]:
+                    if node.target in SUPPORTED_TENSOR_OPS:
                         function = getattr(torch, node.target)
                     else:
                         function = getattr(nn.functional, node.target)
