@@ -176,6 +176,9 @@ Additionally, the table indicates which tools support each layer.
 | moid <https://pytorch.org/docs/stable/generated/torch.nn.fun |    |   |
 | ctional.hardsigmoid.html#torch.nn.functional.hardsigmoid>`__ |    |   |
 +--------------------------------------------------------------+----+---+
+| `silu (swish) <https://pytorch.org/docs/stable/generated/    | ✔️ |   |
+| torch.nn.functional.silu.html#torch.nn.functional.silu>`__   |    |   |
++--------------------------------------------------------------+----+---+
 | `mish <https://pytorch.org/docs/stable/generate              | ✔️ |   |
 | d/torch.nn.functional.mish.html#torch.nn.functional.mish>`__ |    |   |
 +--------------------------------------------------------------+----+---+
